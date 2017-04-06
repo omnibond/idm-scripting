@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="yes"?>
+
+<item-def type="JunetsuDHCP" category="Application" group="Junetsu">
+    <name>%Name</name>
+    <tooltip>%Tip</tooltip>    
+    <icons>
+        <small>icons/small/generic_app.gif</small>
+        <regular>icons/generic_app.png</regular>
+    </icons>
+
+    
+    <supported-drivers>
+        <item type="JunetsuDHCP-Driver"/>
+    </supported-drivers>
+    
+    <!--
+    <supported-protocols>
+        <item type="VNC"/>
+    </supported-protocols>
+    -->
+</item-def>

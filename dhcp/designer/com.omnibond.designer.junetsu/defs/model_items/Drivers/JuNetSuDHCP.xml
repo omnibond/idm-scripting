@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="yes"?>
+
+<driver type="JunetsuDHCP-Driver" primaryApp="JunetsuDHCP" secondaryApp="GenericApp">
+    <name>%Name</name>
+    <tooltip>%Tip</tooltip>
+
+    <icons>
+        <regular>icons/driver.png</regular>
+        <small>icons/small/driver.png</small>
+    </icons>
+
+    <driver-configs>
+        <driver-config file="DHCP.xml"/>
+    </driver-configs>
+
+    <password-support>
+         <subscriber>
+            <init value="no"/>
+            <modify value="no"/>
+            <check value="no"/>
+         </subscriber>
+         <publisher>
+            <init value="no"/>
+            <modify value="no"/>
+         </publisher>
+    </password-support>
+</driver>
+

@@ -1,0 +1,12 @@
+LICENSE
+Rules\Scripting-WinDomain.xml
+Schema\schema.def
+Scripts\Add.vbs
+scripts\CheckObjectPassword.vbs
+scripts\Delete.vbs
+scripts\Modify.vbs
+scripts\ModifyPassword.vbs
+scripts\Move.vbs
+scripts\Query.vbs
+scripts\Rename.vbs
+

@@ -1,0 +1,1508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<driver-configuration
+  description="xlfid(Descr)Scripting"
+  dn="Scripting.DriverSet.Services.YourOrganization"
+  driver-set-dn="DriverSet.Services.YourOrganization"
+  name="Scripting">
+
+  <variable-decl>
+    <text-var var-name="SCRIPTING.Dataflow"
+        description="xlfid(DataflowDescr)You can configure data flow for the driver now. Select the data flow that you desire. Bidirectional means that both the application and the Identity Vault are authoritative sources of the data synchronized between them. Application to Identity Vault means that the application is the authoritative source.  Identity Vault to Application means that the Identity Vault is the authoritative source. &#10;&#10;[Note: currently only 'Identity Vault to Application' is supported.]"
+        highlight="[]-"
+        prompt="xlfid(DataflowPrompt)Configure Data Flow:">
+      <dropdown>
+        <value display="xlfid(OptBidirectional)Bidirectional">Both</value>
+        <value display="xlfid(OptPublisher)Application to Identity Vault">Publisher</value>
+        <value display="xlfid(OptSubscriber)Identity Vault to Application">Subscriber</value>
+      </dropdown>
+    </text-var>
+
+    <text-var var-name="SCRIPTING.Domain"
+        description="xlfid(DomainDescr)You may enter the name of an NT domain, a single Windows system, or the NetBIOS name of an Active Directory tree."
+        highlight="[]-"
+        prompt="xlfid(DomainPrompt)Connected Windows domain or system:">
+    </text-var>
+
+    <!-- Always use VBScript -->
+    <text-var var-name="SCRIPTING.Language">WindowsVB</text-var>
+
+    <text-var var-name="SCRIPTING.PublisherPollingInterval"
+      description="xlfid(PublisherPollingIntervalDescr)Specify a number for the Publisher polling interval, measured in seconds. [For example: '60']"
+      highlight="[]     "
+      prompt="xlfid(PublisherPollingIntervalPrompt)Polling Interval (Seconds):">60</text-var>
+
+    <text-var var-name="SCRIPTING.HeartBeatInterval">0</text-var>
+
+    <text-var var-name="SCRIPTING.eDirBase"
+        browse="yes"
+        description="xlfid(eDirBaseDescr)Specify the base container in the Identity Vault for synchronization. This container is used in the Subscriber channel Event Transformation policies to limit the Identity Vault objects being synchronized and in the Publisher channel Placement policies when adding objects to the vault. For example: &#10;&#10; [users.myorg]"
+        highlight="[]-"
+        prompt="xlfid(eDirBasePrmpt)Base Container in eDirectory:"/>
+
+    <!-- Do not use AutoAssociate -->
+    <text-var var-name="SCRIPTING.AutoAssociate">false</text-var>
+
+    <text-var var-name="SCRIPTING.StripOldValues"
+        description="xlfid(StripOldValuesDescr)By default, the engine will remove attribute values whose timestamps are older than that of their current state.  Choose 'Strip' to keep the default and strip these values when events are processed on the subscriber channel.  Choose 'Keep' to allow the attribute values to be processed by the subscriber channel.  This is useful if your application requires that an action be taken on every event."
+        prompt="xlfid(StripOldValuesPrompt)Strip or Keep old attribute values">
+      <dropdown>
+        <value display="xlfid(OptStrip)Strip">true</value>
+        <value display="xlfid(OptKeep)Keep">false</value>
+      </dropdown>
+    </text-var>
+
+    <!--
+    <text-var var-name="SCRIPTING.Entitlements"
+        description="xlfid(EntitlementsDescr)Do you want this driver to use Approval Flow or Role-Based Entitlements with the Entitlements Service driver?"
+        highlight="[]"
+        prompt="xlfid(EntitlementsPrompt)Enable Entitlements:">
+      <dropdown>
+        <value display="xlfid(OptNo)No">false</value>
+        <value display="xlfid(OptYes)Yes">true</value>
+      </dropdown>
+    </text-var>
+    -->
+
+    <text-var var-name="SCRIPTING.RemoteHost"
+        description="xlfid(RemoteHostDescr)Specify the host name or IP address and port number where the driver is running (Scripting system). The default port number is 8090. &#10;&#10;[Host Name or IP Address and Port; ###.###.###.###:####]"
+        highlight="[]-"
+        prompt="xlfid(RemoteHostPrompt)Remote Host Name and Port:"
+        prompt-mandatory="true"
+        prompt-type="ipa">xlfid(RemoteHostValue):8090</text-var>
+
+    <text-var var-name="SCRIPTING.UseSSL"
+        description="xlfid(RemoteHostUseSSLDescr)Choose whether to use Secure Sockets Layer (SSL) to encrypt the connection between the Identity Vault and the application."
+        highlight="[]"
+        prompt="xlfid(RemoteHostUseSSLPrompt)Use SSL:">
+        <dropdown>
+          <value display="xlfid(OptYes)Yes">true</value>
+          <value display="xlfid(OptNo)No">false</value>
+        </dropdown>
+    </text-var>
+
+    <text-var var-name="SCRIPTING.DriverPwd"
+        description="xlfid(DriverPswdDescr)The Driver Object Password is used by the Remote Loader to authenticate itself to the Metadirectory server. It must be the same password that is specified as the Driver Object Password on the Remote Loader."
+        highlight="[]-"
+        prompt="xlfid(DriverPswdPrompt)Driver Object Password:"
+        prompt-mandatory="true"
+        prompt-type="password"/>
+
+    <text-var var-name="SCRIPTING.RemotePwd"
+        description="xlfid(RemotePswdDescr)The Remote Loader password is used to control access to the Remote Loader instance. It must be the same password that is specified as the Remote Loader password on the Remote Loader."
+        highlight="[]-"
+        prompt="xlfid(RemotePswdPrompt)Remote Loader Password:"
+        prompt-mandatory="true"
+        prompt-type="password"/>
+
+  </variable-decl>
+
+
+  <!-- The following variable-decl sections are conditional prompting sections -->
+
+  <!-- Language Perl -->
+  <variable-decl use-when-var="SCRIPTING.Language" use-when-value="Perl">
+    <text-var var-name="SCRIPTING.SubscriberScript">subscriber.pl</text-var>
+    <text-var var-name="SCRIPTING.PollingScript">poll.pl</text-var>
+    <text-var var-name="SCRIPTING.HeartbeatScript">heartbeat.pl</text-var>
+  </variable-decl>
+
+  <!-- Language WindowsVB -->
+  <variable-decl use-when-var="SCRIPTING.Language" use-when-value="WindowsVB">
+    <text-var var-name="SCRIPTING.SubscriberScript">scripts\Subscriber.wsf</text-var>
+    <text-var var-name="SCRIPTING.PollingScript">scripts\Poll.wsf</text-var>
+    <text-var var-name="SCRIPTING.HeartbeatScript">scripts\Heartbeat.wsf</text-var>
+  </variable-decl>
+
+  <!-- Language UnixShell -->
+  <variable-decl use-when-var="SCRIPTING.Language" use-when-value="UnixShell">
+    <text-var var-name="SCRIPTING.SubscriberScript">subscriber.sh</text-var>
+    <text-var var-name="SCRIPTING.PollingScript">poll.sh</text-var>
+    <text-var var-name="SCRIPTING.HeartbeatScript">heartbeat.sh</text-var>
+  </variable-decl>
+
+  <!-- AutoAssociate yes -->
+  <variable-decl use-when-var="SCRIPTING.AutoAssociate" use-when-value="true">
+    <text-var var-name="SCRIPTING.AutoAssociateValue"
+        description="xlfid(AutoAssociateValueDescr)When generating associations, select which value should be used for the object's association.  If you choose 'Source Name', the object's naming attribute will be used as the association.  This value may be easier to read and use by a script.  If you choose 'GUID', the object's Global Unique Identifier will be used.  This value is guaranteed to be unique, even when it's renamed or moved."
+        prompt="xlfid(AutoAssociateValuePrompt)Association Value:">
+      <dropdown>
+        <value display="xlfid(OptSourceName)Source Name">SourceName</value>
+        <value display="xlfid(OptGUID)GUID">GUID</value>
+      </dropdown>
+    </text-var>
+  </variable-decl>
+
+  <!-- AutoAssociate no -->
+  <variable-decl use-when-var="SCRIPTING.AutoAssociate" use-when-value="false">
+    <text-var var-name="SCRIPTING.AutoAssociateValue">SourceName</text-var>
+  </variable-decl>
+
+  <!-- SSL yes -->
+  <variable-decl use-when-var="SCRIPTING.UseSSL" use-when-value="true">
+    <node-var var-name="SCRIPTING.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="SCRIPTING.RemoteHost" part="ipa"/> port=<variable-ref var-name="SCRIPTING.RemoteHost" part="port"/> kmo="SSL CertificateIP")</node-var>
+    <node-var var-name="SCRIPTING.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="SCRIPTING.RemotePwd"/>)</node-var>
+  </variable-decl>
+
+  <!-- SSL no -->
+  <variable-decl use-when-var="SCRIPTING.UseSSL" use-when-value="false">
+    <node-var var-name="SCRIPTING.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="SCRIPTING.RemoteHost" part="ipa"/> port=<variable-ref var-name="SCRIPTING.RemoteHost" part="port"/>)</node-var>
+    <node-var var-name="SCRIPTING.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="SCRIPTING.RemotePwd"/>)</node-var>
+  </variable-decl>
+
+  <!-- Conditional First Panel for RBE/Approval Work Flow -->
+  <!--
+  <variable-decl use-when-var="SCRIPTING.Entitlements" use-when-value="true">
+    <text-var var-name="SCRIPTING.UserAcctPolicy"
+              description="xlfid(UserAcctDesc)User accounts can be managed by driver policy, or by granting Scripting user accounts through Approval Flow (AF) or Role Based Entitlements (RBE)."
+              prompt="xlfid(UserAcctPrmpt)User Account Policy">
+      <dropdown>
+        <value display="xlfid(OptUserAcctEntitlements)Use AF or RBE">entitlements</value>
+        <value display="xlfid(OptUserAcctPolicy)Implement in Policy">policy</value>
+      </dropdown>
+    </text-var>
+
+  </variable-decl>
+  -->
+
+  <!-- Conditional Second Panel for Entitlements -->
+  <!--
+  <variable-decl use-when-var="SCRIPTING.UserAcctPolicy" use-when-value="entitlements">
+    <text-var var-name="SCRIPTING.EntAddAccount"
+        description="xlfid(EntAddAccountDescr)Choose what action is taken when a user account is added by Entitlements."
+        prompt="xlfid(EntAddAccountPrompt)Action On Applying Scripting Account Entitlement:">
+      <dropdown>
+        <value display="xlfid(OptAccountEnable)Enable the Scripting Account">enable</value>
+        <value display="xlfid(OptAccountDisable)Disable the Scripting Account">disable</value>
+      </dropdown>
+    </text-var>
+
+    <text-var var-name="SCRIPTING.EntRemoveAccount"
+        description="xlfid(EntRemoveAccountDescr)Choose what action is taken when a user account is removed by Entitlements."
+        prompt="xlfid(EntRemoveAccountPrompt)Action On Removing the Scripting Account Entitlement:">
+      <dropdown>
+        <value display="xlfid(OptAccountDisable)Disable the Scripting Account">disable</value>
+        <value display="xlfid(OptAccountDelete)Delete the Scripting Account">delete</value>
+      </dropdown>
+    </text-var>
+  </variable-decl>
+  -->
+  <!-- Entitlements no -->
+  <!--
+  <variable-decl use-when-var="SCRIPTING.Entitlements" use-when-value="false">
+    <text-var var-name="SCRIPTING.EntAddAccount">enable</text-var>
+    <text-var var-name="SCRIPTING.EntRemoveAccount">disable</text-var>
+    <text-var var-name="SCRIPTING.UserAcctPolicy">policy</text-var>
+  </variable-decl>
+  -->
+
+  <attributes>
+    <application-schema>
+      <schema-def />
+    </application-schema>
+    <configuration-manifest>
+      <manifest name="SCRIPTING">
+        <capability name="password-subscribe"/>
+        <capability name="password-publish"/>
+        <capability name="password-check"/>
+      </manifest>
+    </configuration-manifest>
+    <global-config-values>
+      <configuration-values>
+        <definitions>
+          <header display-name="xlfid(DriverParametersDisp)Driver parameters"/>
+
+          <definition display-name="xlfid(ConnectedSystemGCV)Connected System or Driver Name" name="ConnectedSystemName" type="string">
+            <description>xlfid(ConnectedSystemGCVDescr)The name of the connected system, application or Identity Manager driver. This value is used by the e-mail notification templates.</description>
+            <value xml:space="preserve"><variable-ref var-name="System.DriverName"/></value>
+          </definition>
+
+          <!-- No AutoAssociate
+          <definition display-name="xlfid(AutoAssociateGCV)Auto Associate Objects" name="auto-associate" type="enum">
+            <description>xlfid(AutoAssociateGCVDescr)Automatically assign associations to objects.  Use this option if your connected system does not need to match and query objects when processing subscriber events.</description>
+            <value xml:space="preserve"><variable-ref var-name="SCRIPTING.AutoAssociate"/></value>
+            <enum-choice display-name="xlfid(OptYes)Yes">true</enum-choice>
+            <enum-choice display-name="xlfid(OptNo)No">false</enum-choice>
+          </definition>
+
+
+          <definition display-name="xlfid(AutoAssociateValueGCV)Auto Associate Value" name="auto-associate-value" type="enum">
+            <description>xlfid(AutoAssociateValueGCVDescr)When generating associations, select which value should be used for the object's association.  If you choose 'Source Name', the object's naming attribute will be used as the association.  This value may be easier to read and use by a script.  If you choose 'GUID', the object's Global Unique Identifier will be used.  This value is guaranteed to be unique, even when it's renamed or moved.</description>
+            <value xml:space="preserve"><variable-ref var-name="SCRIPTING.AutoAssociateValue"/></value>
+            <enum-choice display-name="xlfid(OptSourceName)Source Name">SourceName</enum-choice>
+            <enum-choice display-name="xlfid(OptGUID)GUID">GUID</enum-choice>
+          </definition>
+          -->
+          <definition display-name="xlfid(DomainGCV)Windows Domain or System" name="windows-domain" type="string">
+              <description>xlfid(DomainGCVDescr)The name of the Windows domain, single system, or AD tree (NetBIOS name) for which the driver will manage identities.</description>
+              <value><variable-ref var-name="SCRIPTING.Domain"/></value>
+          </definition>
+
+          <definition display-name="xlfid(StripOldValuesGCV)Strip Old Values" name="strip-old-values" type="string">
+            <description>xlfid(StripOldValuesGCVDescr)By default, the engine will remove attribute values whose timestamps are older than that of their current state.  Choose 'Strip' to keep the default and strip these values when events are processed on the subscriber channel.  Choose 'Keep' to allow the attribute values to be processed by the subscriber channel.  This is useful if your application requires that an action be taken on every event.</description>
+            <value xml:space="preserve"><variable-ref var-name="SCRIPTING.StripOldValues"/></value>
+            <enum-choice display-name="xlfid(OptStrip)Strip">Strip</enum-choice>
+            <enum-choice display-name="xlfid(OptKeep)Keep">Keep</enum-choice>
+          </definition>
+          <!--
+          <header display-name="xlfid(AFandRBEEntSelDisp)Approval Flow and Role Based Entitlement Selections" rope-in-value="entitlements">
+            <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+          </header>
+
+          <group rope-in-value="entitlements">
+            <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+
+            <definition display-name="xlfid(EntitlementActionApplyGCV)Action On Applying Scripting Account Entitlement"
+                        name="on-account-add" type="enum">
+              <value>
+                <variable-ref var-name="SCRIPTING.EntAddAccount"/>
+              </value>
+              <description>xlfid(EntitlementActionApplyGCVDescr)Choose what action is taken when a user account is removed by Entitlements.</description>
+              <enum-choice display-name="xlfid(EnableAccount)Enable the Scripting Account">enable</enum-choice>
+              <enum-choice display-name="xlfid(DisableAccount)Disable the Scripting Account">disable</enum-choice>
+            </definition>
+
+            <definition display-name="xlfid(EntitlementActionRemoveGCV)On Removing Scripting Account Entitlement"
+                        name="on-account-remove" type="enum">
+              <value>
+                <variable-ref var-name="SCRIPTING.EntRemoveAccount"/>
+              </value>
+              <description>xlfid(EntitlementActionRemoveGCVDescr)Specify the action you want the driver to take on an associated Scripting account when a user's Scripting account entitlement is removed in the Identity Vault.</description>
+              <enum-choice display-name="xlfid(DisableAccount)Disable the Scripting account">disable</enum-choice>
+              <enum-choice display-name="xlfid(DeleteAccount)Delete the Scripting account">delete</enum-choice>
+            </definition>
+          </group>
+          -->
+          <header display-name="xlfid(PassManagementDisp)Password Management"/>
+
+          <group>
+            <definition name="pwd-mgt-display" display-name="xlfid(ShowPassManagementDisp)Show Password Management Policy" type="enum">
+              <enum-choice display-name="xlfid(OptShow)Show">show</enum-choice>
+              <enum-choice display-name="xlfid(OptHide)Hide">hide</enum-choice>
+              <value>hide</value>
+            </definition> <!-- "group leader" definition is the value for displaying subordinates -->
+
+            <subordinates active-value="show">
+              <definition display-name="xlfid(EnablePasswordSubGCV)The Scripting Connected System Accepts Passwords from the Identity Vault" name="enable-password-subscribe" type="string">
+                <description>xlfid(EnablePasswordSubGCVDescr)If true, allows passwords to flow from the Identity Vault to the Scripting connected system.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnablePasswordPubGCV)The Identity Vault Accepts Passwords from the Scripting Connected System" name="enable-password-publish" type="string">
+                <description>xlfid(EnablePasswordPubGCVDescr)If true, allows passwords to flow from the Scripting connected system to the Identity Vault.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnablePasswordResetPubGCV)The Identity Vault Accepts Administrative Password Resets from the Scripting Connected System" name="enable-password-reset-publish" type="string">
+                <description>xlfid(EnablePasswordResetPubGCVDescr)If true, allows passwords to be reset from the Scripting connected system to the Identity Vault. This allows root to use the passwd command to set another user's password.</description>
+                <value xml:space="preserve">false</value>
+                <enum-choice display-name="xlfid(OptYes)Yes">true</enum-choice>
+                <enum-choice display-name="xlfid(OptNo)No">false</enum-choice>
+              </definition>
+              <definition display-name="xlfid(PublishToNdsGCV)Publish Passwords to NDS Password" name="publish-password-to-nds" type="string">
+                <description>xlfid(PublishToNdsGCVDescr)Use the password from the Scripting connected system to set the non-reversible NDS password in the Identity Vault.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(PublishToDpGCV)Publish Passwords to Distribution Password" name="publish-password-to-dp" type="string">
+                <description>xlfid(PublishToDpGCVDescr)Use the password from the Scripting connected system to set the NMAS Distribution Password used for Identity Manager password synchronization.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnforcePwdPolicyGCV)Require Password Policy Validation before Publishing Passwords" name="enforce-password-policy" type="string">
+                <description>xlfid(EnforcePwdPolicyGCVDescr)If true, applies NMAS password policies during publish password operations. The password is not written to the Identity Vault if it does not comply.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(ResetPwdGCV)Reset User's External System Password to the Identity Manager Password on Failure" name="reset-external-password-on-failure" type="string">
+                <description>xlfid(ResetPwdGCVDescr)If true, on a publish Distribution Password failure, attempt to reset the password in the Scripting connected system using the Distribution Password from the Identity Vault.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(NotifyGCV)Notify the User of Password Synchronization Failure via E-Mail" name="notify-user-on-password-dist-failure" type="boolean">
+                <description/>
+                <value>true</value>
+              </definition>
+            </subordinates>
+          </group>
+
+          <header display-name="xlfid(UserGroupPlacementDisp)User and Group Placement"/>
+
+          <group>
+            <definition name="placement-display" display-name="xlfid(ShowUserGroupPlacementDisp)Show User and Group Placements" type="enum">
+              <enum-choice display-name="xlfid(OptShow)Show">show</enum-choice>
+              <enum-choice display-name="xlfid(OptHide)Hide">hide</enum-choice>
+              <value>hide</value>
+            </definition> <!-- "group leader" definition is the value for displaying subordinates -->
+
+            <subordinates active-value="show">
+              <definition display-name="xlfid(UserContainerPrompt)User Base Container" name="scripting-user-container" type="dn" dn-space="dirxml" dn-type="slash">
+                <description>xlfid(UserContainerDescr)Container used to discover and provision users.</description>
+                <value>
+                  <variable-ref var-name="SCRIPTING.eDirBase"/>
+                </value>
+              </definition>
+              <definition display-name="xlfid(GroupContainerPrompt)Group Base Container" name="scripting-group-container" type="dn" dn-space="dirxml" dn-type="slash">
+                <description>xlfid(GroupContainerDescr)Container used to discover and provision groups.</description>
+                <value>
+                  <variable-ref var-name="SCRIPTING.eDirBase"/>
+                </value>
+              </definition>
+            </subordinates>
+          </group>
+
+        </definitions>
+      </configuration-values>
+    </global-config-values>
+    <driver-filter-xml>
+      <filter>
+        <filter-class class-name="Group" publisher="ignore" subscriber="sync">
+          <filter-attr attr-name="CN" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Description" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Member" merge-authority="default" publisher="ignore" subscriber="sync"/>
+        </filter-class>
+        <filter-class class-name="User" publisher="ignore" subscriber="sync">
+          <filter-attr attr-name="CN" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Description" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Full Name" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Locked By Intruder" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Login Disabled" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          
+          <!-- Login Disabled is not synchronized if account is controlled by entitlements-->
+          <!--
+          <filter-attr attr-name="Login Disabled" merge-authority="default" publisher="sync"
+                       subscriber="sync" rope-in-value="policy">
+            <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+          </filter-attr>
+          <filter-attr attr-name="Login Disabled" merge-authority="default" publisher="ignore"
+                       subscriber="ignore" rope-in-value="entitlements">
+            <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+          </filter-attr>
+          <filter-attr attr-name="Login Expiration Time" merge-authority="default" publisher="ignore" subscriber="sync"/>
+
+          <filter-attr attr-name="DirXML-EntitlementRef" merge-authority="edir" publisher="ignore"
+                       publisher-optimize-modify="true" subscriber="notify" rope-in-value="true">
+            <variable-ref var-name="SCRIPTING.Entitlements" attr-name="rope-in"/>
+          </filter-attr>
+          -->
+          <filter-attr attr-name="nspmDistributionPassword" merge-authority="none" publisher="ignore" publisher-optimize-modify="false" subscriber="notify"/>
+          <filter-attr attr-name="Password Expiration Time" merge-authority="default" publisher="ignore" subscriber="sync"/>
+          <filter-attr attr-name="Password Required" merge-authority="default" publisher="ignore" subscriber="sync"/>
+
+        </filter-class>
+      </filter>
+    </driver-filter-xml>
+    <driver-image><![CDATA[R0lGODlhYgBPAOZ/ALnr8b/V6JycnPT09HjZ5arX6Kmoqj08Pdfz93XD3DaWxNnZ2eXl5dLS0vn5+Sp1tMTExNrq9Ozs7ZXi6yWFvOTt87u7u/39/WTV4bPh7PX7/Xe62Ie3153T5YnC3ZfL4cTu8xZ6tgRZpGq11cHb66bk7BVjqrOztGSq0GnW4kCAukiYxqTN44zK4GGWxlWjzAl3s+v2+TCIvs7x9kaiy5XE3lSeyt71+H/c56XF38vr8m6Pk87p74Gr0Zq82mGkzYezuM3MzaW7vvD2+oiFiu36+4vf6YOUl1+y0w5qrHOv07HM4o3S5PLy8nOizFBQUEZ1lj+QwiB/uR1sr2HI3ePy9/j9/Q1vsNDk8Nzc3Fes0NDg7oTd58Dm8FCMwObp637L4H/X5eP3+Yfb52/X41CqzwQEBENDQ+7v8GRkY5mYmXB2e9fX12FeXQBLf4DU3rHp8Pv7+7i4uGmrsqKss/f398jIyAVysbq0t16MkihjjGXP4ABmrR0dHf///////yH5BAEAAH8ALAAAAABiAE8AAAf/gH+Cg4SFhoeIiYqLiQwQRG1nfX0HT2sGC3WMm5ydnpsNa31mZpMHB5OkZm1yn66vsIZooqWXDQwDdQwNckRnpE8QscPEiw0HpWoMfszNzmhyyH0GxdXWEKNtEs7c3A5qpGrW47ALo2rd6dzYZifk75wXv0TcEhAGRGtrRAYQaNxySjWARzARuCcOnD3aR6ShQzUQuB3UVLCioDqTIjIbYIChGgMgQ6ohImdAMwe/3FmsSGSVs45EPsqBAKFBA5pyDKiRo9AMQkSP0jw5Q7So0aNIkypduvTJpAXNIOwzcKLmAgZYGSy4ecJAg2Z1fmUxtKDNqFKT0qpdy7at27dw/ylp9INmpAE5Da6iGcB3ABqtvEo2a0mN0IlRfdQskNC3sePHkCNLntxYYcwTt9DUcXCh8wUHdf42OAGVWcA0TQYFNEMkobrXsGPL7naBG75+CzTX5nYh9AKazcwdWCDIXLvZyJMrvxBnNzM1O2/Vcc5b181maFAJc7CGtWytC8KLH0++vPnz5MFvZbNtMG40rtU5QPMbLKqBDEq1T8dGAPT/AAYY4BFHqLEDdAeqUWCBBiKoIIMCQmeBMx9BgAt1tA2wSzMDoGLHHwZ4p04D0Alg4okopogigQLkYaKLR+wggIwzmigjiyqaCJJzIN0yAIa8aViaHxJo90d3PKWThf9/ApxgAU1QRikllEAIAcEcNGEpBBAQVNklTVwKYeWUENgBAR7x5eQjkM5coOEyzAhnwR9mDWmbGgJYsBhlj5XAwwBv8BUoDyUM4CegA1RQaAZ/QhZaEP8w00A/F8LmJgP7neCTME7B2Q2eJ2RRRzpFFPEaHAj4YYQfGqwKAhyqpoqBHwhM4Aeqr8WRhad1zJRbfOnMx8CozLREBKd9eOrMAB81YJI6YoCgQToTyErrqnDAaoS1CGCbqjoXMMCGcwvgNSybfvTGQKREjmLAnJ2mU9cJDACpwbSswgFAN0bsi4EG3d6qLQIazArCqtW+VoQEDeznx025TUdbaA6H+ET/VX/E240EalggAZtFzIDvDDiA4AwBcIiBAQIAzGqErRjMgMCscKy6bTcaAJDqAGw0EJ8DW627mWefhYaGcwOMQoQAY2lcT8cOdwOHyaxOQIDJBZcww8olzIqDEQXDsXURJeDgBwHfMqMBHCXg60AWEGTBDXjrNoYGY9yk4ZMcKjntDMce4ywyM91SDQIZBBCAAQZkYEBA4zgsHjkOkU/QeNffro1D2jPcwLAFyvYmQVaYMgasHy1NI8dYGSebDuBRNwMC1RqUcLMYjS+u++689z6DGCWQASszIAAwbR1Z2AG6cumm3vGHgvjdDOzcpC1Gwn7MQAYXcCje+/fgY8CF/6k5Y++H53Cv7lpnsDXQRilEPOnAINIzQz03M8zQjO2pasBFCgAMoAAHSMAArqoI3RueH4qngfn8Rg5BkEAc0sWmBdAiMXKwABoIUT8iQa0Z+PJDEbCHAAIYIX8FTKEKv5YCI5hqgRMQQzNigAa4dcUCbGBAEyS2Eb2VIg0nmElqOOi6jX2wGTegmh9KEIb+TWAPASSDFKdIxSpaUYop2JcGQMCFfTHjBjfQQByawIAg5KQrcqjXYErxBKpgZn6F6OD9ZliCb92ADE30Qxj2AMUUkGECgASkEapIgEACEgdUvEH3JjAyAMiQGW76QhaCAAELeMw5ZmmSBSCFCDkesf8KEWhGBphwA1aVgAoE4KMqSwCAVrYSB4mLJcpcCYDuyXJzzJiBEZR4AxkyJzQMSF4TnJGGPmBmOonwZODUloFQ+qEKYOhADPzQBSpYkwp7MEK2XDmGxFHumzgAwOxmVwJZIsAKXGzbFwHwwmbEYT7OIqYxB6IIZUpAA9Nkhg6kyYwMUKED/rxmGLK1zUHGknJcSOgExknObxrha6U8n9aaYYV2+sEBbHgWM4qJmUXYk1U8cGYMWsBPBCTgpCcFQwZoaTnEESAMME3oGIxQAoaCYAIJ5cIErJC9CcCBpyKcgUXTtQCN+oGj9ExmEZ+2TD/wgJ/UTEABqpCBlKq0C1j/7UIG3gCGN7wUpmAdw0zFydAJGIGmAADkI8Wgs3RcoKjy7Gg9l/o3NZzACTK4QhRIoIEPeOAHMuBDCGSABAVIQQoUWMEGsPqDFZRhBIc9LA0KS4HKVlYGG0ABCjYAAArIYKzMqAEKAMDTHKwgsDL4AQkukAWjItWjdJ2eGqAgghF4QApKKIIS+HAFFHxgBL2lAB9WgIIr8MEGXQjsDzbABz6gIArNlYIMVtDcF2A2sCgAQXMVUAIrIKAENJCBGIYA3RBsoAUbCIEUxNDauDbgAnNVlmzdkAQQWAELGeBAcz+QAQ90YAMFwG4XqCuDDEjBuczlwweY0FwUVLW5ICgB/xywq93tAnIGHJABAqh7hQIMrgotmEF7m4FU+CpVvvZTgxtEYIMh+MEKgZWCDi5QgA2c98AoGDAfZNAFHCd4wQ3uwAggzIQxCDe7zd1uKZUggwJUV38gLMKINzpPE3cytinWgwh4ywE/NLgAYLaxB4S7Ag8Y1wMGRnBzPQBdPmRAyM3VAROYcGTtvuDAzgWvDDyw36Gy1rVVju/r1EAHFSQZBQ3WwQhsvIEOBLa5V8hAF1rg4yTr9QOTHjIfQDBnHGs3x3geAQpkgGgFN2MIJFjtlI8a6BPLq2NfqEEIkjzcDpCgAIvewIHb/IMW3FbNCs7Am8EABiRAuAWUdu6nu/8AhlnvWAY12G8zSNBcBKy6xILuRl3osI0qNLe8EdCAB0ZA7lmjgLp86MCvUaDpD6D0pFqAMLGP3AXndoAJCTDujnVQ3d1Qmw9wuHarr4xiuqhBD0vwwxB2XADj2kAJSuBAFKJg7obvuAPmbvcGyE3uMkBYqgJ2LhOIbXEZ3EC/fKgBM/4dcGJRGTNWPkQH67LiKFwhBB24AQmEmwQZHLgF2M2ADRqMXWPzoQVISHrSadBcALQgA0F3bgtOqgNqy0BrsuaDFGwu2IADC9uu1jahOYBsnbFgAzwoALKfXoAVtKAALCiAB0hag7eP4AVPL4Pey6CFx7YAAGCeewE6oIX/AoAhAYfPAAk6AAKA3qADa+8AAHSwgK8PXOZYNrjHNFCECOQAC8yoghJQQIIInHsFNrBBDViwhCXA/QcvoIHsZz/7MiChA2AGcweUjoQW+CECyM7nPqtQ0SLw9K2Wh3m2uVEXjw0hAFtoBgtsUABmsEAGCsh+FFawehZ4vwYrCH/2x599GpC0A7jf/d717vvfJyADouxCmyrvXtgWvPkSqEAzIuCEhPuhAoClBDYgAwQ4XTXwAQj4ARswcVFAftm3AQmIflpAewVAAkgwAlXADF3QAfiiARkISfRHYvNkf6+2TM8XAM3gA17gAy6GAodlWdxXAzJYA9ZVgAXoWwn4/wFa4IBIMC0WWH3MUAA8QBsh+HJJRXAluA1DAHor5wL+VwFe8ABSGFlSUGYecIVs9oKVpXozWAMjQIDl5wGy50z99YH4FEJElXxHiHn3d0TMMAQ+kAPNwAEq4ARYQAJSKIUhMFg2SAF7uIfSxYDhZ1mVpQChVAA08AFqA2bgUoSsJldhx3xuuAX+5wcBoAIc4GJYoAJT0ImeOAVXEIowMIqkCAN/qF5aSAHjF31+UABa4ExL6GK84YivtXzP4Ian1gM94GJD0AMm4AIc8AAmYAKf2ImhGIp3kIyleIqH9QFDUAAKkIkK93anRoRqSIJi11TMEACVGAAP4AT6twTDOP+O5GgCSXCOx5iMykiKf8gCobUCsDhVjXiNtogduKh/b+gCu6hwTiACU2ACIhCQ5UiO55gEyKiOyUgCHCAFL8CLHqCIbziP9VePzIB/6eAD0ugHSzAFLoCCXhCQICkCAzmOBWmQ6vgDCscBCkACzFABNcCEEimCkIiE2Rg1zyeLEeAFLhBKQ/CRIfmTIjmSBRkFPxACUcCLHKAEsriEr4F8ExmJt6iN3ICRziSOKuAD4siRIvAAKiACXgCQLiCSwvgA/6gCJuAFQzAEC/mEHgCTTUmLI0iRmhc7v7cEOKkCLsCKfoCXfiACrScCPfkAfekEAeCXvjgEFeAEKqB/Q6D/BD8gi3cYG04pk2toCDOHi28oi37QA07gTM2gAj3QlwFQmJupAn4wBT2wBSKwBb7YDFvgAj7QkhzAkhH5lvQIlSeBmc4QABzgmc6AiX0ZAd64maGpAigoApZoms6QA04giyRgl7IxmUYIW3TpB7r5hr7JDR3Zl8lJnHt5nN3JDXBYiZppm09Jk58ilcjRAygomJfonSoQfVNgiU6gDhUAnbMhnX5gFjN5CGbxFeogBx/DPJuJgi7AjwW6l8xgmgEQmq+Bj7Lhcs0gCf1pCKJwArDBBqczGw7aoRqJgsrJoA5KoH9zOhcwCSfABosQIvQAG35RAV9QATI6ozRaoz0g96M3OqOtVwEuIKNecJ8+UKNCOqRCuqEBcTGs0wiTUJ28QaJO+qTO8D5EcAISsAgX0B0tCqVauqXdEBDGBAFwpAjGYQBcWqZb2gBKIwfEsQlyMAprUHBmGqevgQYGMApp8CQxtwhtCj/mQjp++qeAGqiCOqiESjq/oQa/YAZpgAcWMACfMABBoApxMamUWqmWmhakcAbxYweO+goO0ARrcAanMKqkWqqmeqqomqqquqqVkAY7YQcMEAfVcAFktABsIB63aqvhkau3yqu6uqvAOh65ih69ygbDSqx6kacrsazMGg9x8KzQGq3SOq3UWq3Weq3T6hmwEAgAOw==]]></driver-image>
+    <java-module value="com.novell.nds.dirxml.remote.driver.DriverShimImpl"/>
+
+    <driver-start-option value="1"/>
+    <driver-cache-limit value="0"/>
+    <shim-auth-server>
+      <variable-ref attr-name="value" var-name="SCRIPTING.Remote"/>
+    </shim-auth-server>
+    <shim-auth-password>
+      <variable-ref attr-name="password" var-name="SCRIPTING.Remote.Pwd"/>
+    </shim-auth-password>
+    <driver-password>
+      <variable-ref attr-name="password" var-name="SCRIPTING.DriverPwd"/>
+    </driver-password>
+    <shim-config-info-xml>
+      <driver-config name="Scripting Driver">
+        <driver-options>
+          <configuration-values>
+            <definitions>
+             <definition display-name="xlfid(AutomaticLoopbackDetectionPrompt)Automatic Loopback Detection:" name="auto-loopback-detection" type="enum">
+                <description>xlfid(AutomaticLoopbackDetectionDescr)Choose 'Yes' if you wish to enable automatic loopback detection or 'No' to disable automatic loopback detection</description>
+                <value>true</value>
+                <enum-choice display-name="xlfid(OptYes)Yes">true</enum-choice>
+                <enum-choice display-name="xlfid(OptNo)No">false</enum-choice>
+              </definition>
+              <definition display-name="xlfid(ScriptCommandPrompt)Script Command:" name="script-command" type="string" rope-in-value="WindowsVB">
+                  <description>xlfid(ScriptCommandDescr1)The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+                  <description>xlfid(ScriptCommandDescr2)Enter the command line that the driver will use to execute scripts.</description>
+                  <value>cscript //nologo</value>
+              </definition>
+              <definition display-name="xlfid(ScriptTraceFilePrompt)Script Trace File:" name="script-trace-file" type="string" rope-in-value="WindowsVB">
+                  <description>xlfid(ScriptTraceFileDescr1)The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+                  <description>xlfid(ScriptTraceFileDescr2)Enter the path and file name for the script trace file.</description>
+                  <value>logs\script-trace.log</value>
+              </definition>
+            </definitions>
+          </configuration-values> 
+        </driver-options>
+        <subscriber-options>
+          <configuration-values>
+            <definitions>
+              <definition display-name="xlfid(SubscriberScriptPrompt)Subscriber Script:" name="subscriber-script" type="string">
+                <description>xlfid(SubscriberScriptDescr)The file to execute for Subscriber events.</description>
+                <value><variable-ref var-name="SCRIPTING.SubscriberScript"/></value>
+              </definition>
+            </definitions>
+          </configuration-values>
+        </subscriber-options>
+        <publisher-options>
+          <configuration-values>
+            <definitions>
+              <definition display-name="xlfid(PollingScriptPrompt)Polling Script:" name="polling-script" type="string">
+                <description>xlfid(PollingScriptDescr)The Polling file to execute for Publisher events.</description>
+                <value><variable-ref var-name="SCRIPTING.PollingScript"/></value>
+              </definition>
+              <definition display-name="xlfid(HeartbeatScriptPrompt)Heartbeat Script:" name="heartbeat-script" type="string">
+                <description>xlfid(HeartbeatScriptDescr)The Polling file to execute for Heartbeat.</description>
+                <value><variable-ref var-name="SCRIPTING.HeartbeatScript"/></value>
+              </definition>
+              <definition name="pub-polling-interval" display-name="xlfid(PublisherPollingIntervalPrompt)Publisher Polling Interval:" type="string">
+                <description>xlfid(PublisherPollingIntervalDescr)The Publisher Polling Interval.</description>
+                <value><variable-ref var-name="SCRIPTING.PublisherPollingInterval"/></value>
+              </definition>
+              <definition name="pub-heartbeat-interval" display-name="xlfid(HeartBeatIntervalPrompt)Heartbeat Interval:" type="string">
+                <description>xlfid(HeartBeatIntervalDescr)The Publisher Heartbeat Interval.</description>
+                <value><variable-ref var-name="SCRIPTING.HeartBeatInterval"/></value>
+              </definition>
+            </definitions>
+          </configuration-values>
+        </publisher-options>
+      </driver-config>
+    </shim-config-info-xml>
+
+    <policy-linkage>
+      <linkage-item dn="Scripting Schema Mapping.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="0" policy-set-name="Schema mapping"/>
+      <linkage-item dn="Password(Sub)-Pub Email Notifications.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="2" policy-set-name="Output transform"/>
+      <linkage-item dn="Event Transformation.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="4" policy-set-name="Subscriber event transform"/>
+
+      <!--
+      <linkage-item dn="Event Transformation.Publisher.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="5" policy-set-name="Publisher event transform" rope-in-value="entitlements">
+        <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+      </linkage-item>
+      -->
+
+      <linkage-item dn="Matching Rule.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="6" policy-set-name="Subscriber matching"/>
+      <linkage-item dn="Matching Rule.Publisher.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="7" policy-set-name="Publisher matching"/>
+      <linkage-item dn="Create Rule.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="8" policy-set-name="Subscriber creation"/>
+      <linkage-item dn="Create Rule.Publisher.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="9" policy-set-name="Publisher creation"/>
+      <linkage-item dn="Command Transformation.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="10" policy-set-name="Subscriber command transform"/>
+      <linkage-item dn="Password(Sub)-Transform Distribution Password.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="1" policy-set="10" policy-set-name="Subscriber command transform"/>
+      <linkage-item dn="Password(Sub)-Check Password GCV.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="2" policy-set="10" policy-set-name="Subscriber command transform"/>
+      <linkage-item dn="Password(Sub)-Add Password Payload.Subscriber.Scripting.DriverSet.Services.YourOrganization" order="3" policy-set="10" policy-set-name="Subscriber command transform"/>
+      <linkage-item dn="Password(Pub)-Check Password GCV.Publisher.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="11" policy-set-name="Publisher command transform"/>
+      <linkage-item dn="Password(Pub)-Publish Distribution Password.Publisher.Scripting.DriverSet.Services.YourOrganization" order="1" policy-set="11" policy-set-name="Publisher command transform"/>
+      <linkage-item dn="Password(Pub)-Publish NDS Password.Publisher.Scripting.DriverSet.Services.YourOrganization" order="2" policy-set="11" policy-set-name="Publisher command transform"/>
+      <linkage-item dn="Password(Pub)-Add Password Payload.Publisher.Scripting.DriverSet.Services.YourOrganization" order="3" policy-set="11" policy-set-name="Publisher command transform"/>
+      <linkage-item dn="Placement Rule.Publisher.Scripting.DriverSet.Services.YourOrganization" order="0" policy-set="13" policy-set-name="Publisher placement"/>
+    </policy-linkage>
+
+  </attributes>
+  <children>
+    <publisher name="Publisher">
+      <attributes/>
+      <children>
+        <rule name="Event Transformation">
+          <policy>
+            <rule>
+              <description>xlfid(ScrPub.ET.DisallowUserDeletesDescr)Do Not Allow User Account Deletes from the Scripting System</description>
+              <comment xml:space="preserve">xlfid(ScrPub.ET.DisallowUserDeletesComment)When using the User Account Entitlement, managed user accounts are controlled by the entitlement in the Identity Vault. A delete in the Scripting system does not delete the controlling object in the Identity Vault. A future change to the object in the Identity Vault or a merge operation will recreate the account in the Scripting system.</comment>
+              <conditions>
+                <and>
+                  <if-operation op="equal">delete</if-operation>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-remove-association when="after">
+                  <arg-association>
+                    <token-association/>
+                  </arg-association>
+                </do-remove-association>
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Matching Rule">
+          <policy>
+            <description>xlfid(ScrPub.Matching.PubMatchDescr)Publisher Matching Policy</description>
+            <rule>
+              <description>xlfid(ScrPub.Matching.MatchCNUserDescr)Match by CN for User Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subordinates">
+                  <arg-dn>
+                    <token-global-variable name="scripting-user-container"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.Matching.MatchCNGroupDescr)Match by CN for Group Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">Group</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subordinates">
+                  <arg-dn>
+                    <token-global-variable name="scripting-group-container"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Create Rule">
+          <policy>
+            <description>xlfid(ScrPub.Create.CheckReqUsersDescr)Check Identity Manager Requirements for Users</description>
+            <rule>
+              <description>xlfid(ScrPub.Create.RequireSurnameUniqueIDDescr)Add Required Surname and UniqueID</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-attr name="CN" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-add-dest-attr-value name="Surname">
+                  <arg-value type="string">
+                    <token-xpath expression="./add-attr[@attr-name='CN']/value"/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <do-add-dest-attr-value name="uniqueID">
+                  <arg-value type="string">
+                    <token-xpath expression="./add-attr[@attr-name='CN']/value"/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Placement Rule">
+          <policy>
+            <description>xlfid(ScrPub.Placement.PubPlacementDescr)Publisher Placement Policy</description>
+            <rule>
+              <description>xlfid(ScrPub.Placement.PlaceUsersDescr)Place User Objects in the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-set-op-dest-dn>
+                  <arg-dn>
+                    <token-global-variable name="scripting-user-container"/>
+                    <token-text xml:space="preserve">\</token-text>
+                    <token-lower-case>
+                      <token-src-name/>
+                    </token-lower-case>
+                  </arg-dn>
+                </do-set-op-dest-dn>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.Placement.PlaceGroupsDescr)Place Group Objects in the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">Group</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-set-op-dest-dn>
+                  <arg-dn>
+                    <token-global-variable name="scripting-group-container"/>
+                    <token-text xml:space="preserve">\</token-text>
+                    <token-lower-case>
+                      <token-src-name/>
+                    </token-lower-case>
+                  </arg-dn>
+                </do-set-op-dest-dn>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+        <rule name="Password(Pub)-Check Password GCV">
+          <policy>
+            <description>xlfid(ScrPub.CT.PubPasswordsDescr)Publish Passwords</description>
+            <rule>
+              <description>xlfid(ScrPub.CT.BlockPubPasswordsDescr)Block Publishing Passwords to the Identity Vault When Adding an Object</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.CT.BlockPubPasswordResetsDescr)Block Publishing Password Resets to the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-reset-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">./old-password</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <do-veto/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.CT.BlockPubModifyPasswordsDescr)Block Sending Modify Password Event to the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Publish Distribution Password">
+          <policy>
+            <description>xlfid(ScrPub.CT.PubPasswordsNMASDescr)Publish Passwords to NMAS Distribution Password</description>
+            <rule>
+              <description>xlfid(ScrPub.CT.AddDistPassToAddDescr)Add nspmDistributionAttribute Attribute to Add Operation</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-dp" op="equal">true</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add add-attr element for nspmDistributionPassword attribute -->
+                <do-add-dest-attr-value name="nspmDistributionPassword">
+                  <arg-value>
+                    <token-password/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <!-- Add a validate-password attribute to previous add-attr element -->
+                <do-set-xml-attr expression="add-attr[@attr-name = 'nspmDistributionPassword'][last()]" name="enforce-password-policy">
+                  <arg-string>
+                    <token-global-variable name="enforce-password-policy"/>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.CT.ChangeModPwdToModifyDescr)Change modify-password Operations to Modify</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-dp" op="equal">true</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add modify-attr element for nspmDistributionPassword attribute -->
+                <do-add-dest-attr-value name="nspmDistributionPassword">
+                  <arg-value>
+                    <token-password/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <!-- Add a event-id attribute to previous modify element -->
+                <do-set-xml-attr expression="../modify" name="event-id">
+                  <arg-string>
+                    <token-text>pwd-publish</token-text>
+                  </arg-string>
+                </do-set-xml-attr>
+                <!-- Add a validate-password attribute to previous add-attr element -->
+                <do-set-xml-attr expression="../modify/modify-attr[@attr-name='nspmDistributionPassword']" name="enforce-password-policy">
+                  <arg-string>
+                    <token-global-variable name="enforce-password-policy"/>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Publish NDS Password">
+          <policy>
+            <description>xlfid(ScrPub.CT.PubPassToNDSDescr)Publish Passwords to NDS Password</description>
+            <rule>
+              <description>xlfid(ScrPub.CT.BlockPubPassToNDSDescr)Block Publishing Passwords to NDS Password</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-nds" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.CT.BlockModPwdToNDSDescr)Block Sending modify-password Events to NDS Password</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-nds" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Add Password Payload">
+          <policy>
+            <description>xlfid(ScrPub.CT.PubPassPayloadsDescr)Publish Password Payloads</description>
+            <rule>
+              <description>xlfid(ScrPub.CT.AddOpDataToPasswordDescr)Add operation-data Element to Password Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-xpath op="true">add-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="." name="operation-data"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrPub.CT.AddPayloadToPasswordDescr)Add Payload Data to Password Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-xpath op="true">add-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-publish-status"/>
+                <do-append-xml-element expression="operation-data/password-publish-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-publish-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+      </children>
+    </publisher>
+    <subscriber name="Subscriber">
+      <attributes/>
+      <children>
+        <rule name="Event Transformation">
+          <policy>
+            <rule>
+                <description>Container based scope filtering (User)</description>
+                <conditions>
+                    <and>
+                        <if-src-dn op="available"/>
+                        <if-class-name op="equal">User</if-class-name>
+                        <if-src-dn op="not-in-subtree">~scripting-user-container~</if-src-dn>
+                        <if-association op="not-associated"/>
+                    </and>
+                </conditions>
+                <actions>
+                    <do-veto/>
+                </actions>
+            </rule>
+            <rule>
+                <description>Container based scope filtering (Group)</description>
+                <conditions>
+                    <and>
+                        <if-src-dn op="available"/>
+                        <if-class-name op="equal">Group</if-class-name>
+                        <if-src-dn op="not-in-subtree">~scripting-group-container~</if-src-dn>
+                        <if-association op="not-associated"/>
+                    </and>
+                </conditions>
+                <actions>
+                    <do-veto/>
+                </actions>
+            </rule>
+            <rule>
+              <description>Strip value timestamps, if configured</description>
+              <conditions>
+                <and>
+                  <if-global-variable name="strip-old-values" op="equal">true</if-global-variable>
+                </and>
+              </conditions>
+              <actions>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-xpath expression="modify-attr/node()/value"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-strip-xpath expression="$current-node/@timestamp"/>
+                  </arg-actions>
+                </do-for-each>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Matching Rule">
+          <policy>
+            <description>xlfid(ScrSub.Matching.SubMatchingDescr)Subscriber Matching Policy</description>
+            <!--
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+              <description>xlfid(ScrSub.Matching.NoMatchExistingEntitlementsDescr)Do Not Match Existing Accounts If Using User Account Entitlements</description>
+              <comment xml:space="preserve">xlfid(ScrSub.Matching.NoMatchExistingEntitlementsComment)When using the User Account entitlement with Approval Flow or Role Based Entitlements, accounts are created and deleted or disabled by granting or revoking the entitlement. Default policy does not match an existing account in the Scripting system, because that account existed outside of entitlements. Replace this rule with your own mathcing policy to allow entitled accounts to match existing accounts in the Scripting system.</comment>
+              <conditions>
+                <and>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-break/>
+              </actions>
+            </rule>
+            -->
+            <rule>
+                <description>Match by CN for User Objects</description>
+                <conditions>
+                    <and>
+                        <if-operation op="equal">add</if-operation>
+                        <if-class-name op="equal">User</if-class-name>
+                        <if-op-attr name="CN" op="available"/>
+                    </and>
+                </conditions>
+                <actions>
+                    <do-find-matching-object scope="subtree">
+                        <arg-dn>
+                            <token-attr name="CN"/>
+                        </arg-dn>
+                        <arg-match-attr name="CN"/>
+                        <arg-match-attr name="DomainName">
+                            <arg-value>
+                                <token-global-variable name="windows-domain"/>
+                            </arg-value>
+                        </arg-match-attr>
+                    </do-find-matching-object>
+                </actions>
+            </rule>
+            <rule>
+                <description>Match by CN for Group Objects</description>
+                <conditions>
+                    <and>
+                        <if-operation op="equal">add</if-operation>
+                        <if-class-name op="equal">Group</if-class-name>
+                        <if-op-attr name="CN" op="available"/>
+                    </and>
+                </conditions>
+                <actions>
+                    <do-find-matching-object scope="subtree">
+                        <arg-dn>
+                            <token-attr name="CN"/>
+                        </arg-dn>
+                        <arg-match-attr name="CN"/>
+                        <arg-match-attr name="DomainName">
+                            <arg-value>
+                                <token-global-variable name="windows-domain"/>
+                            </arg-value>
+                        </arg-match-attr>
+                    </do-find-matching-object>
+                </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Create Rule">
+          <policy>
+            <!--
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+              <description>xlfid(ScrSub.Create.BlockCreateEntitlementDescr)Block Account Creation When Entitlement Is Not Granted</description>
+              <comment xml:space="preserve">xlfid(ScrSub.Create.BlockCreateEntitlementComment)When using the User Account entitlement with Approval Flow or Role Based Entitlements, accounts are created only for users that are specifically granted the account entitlement. This rule vetoes user account creation when the entitlement is not granted.</comment>
+              <conditions>
+                <and>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                  <if-entitlement name="UserAccount" op="not-available"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-veto/>
+              </actions>
+            </rule>
+            -->
+            <rule>
+              <description>xlfid(ScrSub.Create.RequireCNDescr)Require CN Attribute</description>
+              <conditions/>
+              <actions>
+                <do-veto-if-op-attr-not-available name="CN"/>
+              </actions>
+            </rule>
+            <rule>
+                <description>Add DomainName</description>
+                <conditions>
+                    <and/>
+                </conditions>
+                <actions>
+                    <do-add-dest-attr-value name="DomainName">
+                        <arg-value type="string">
+                            <token-global-variable name="windows-domain"/>
+                        </arg-value>
+                    </do-add-dest-attr-value>
+                </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Command Transformation">
+          <policy>
+            <!--
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+              <description>xlfid(ScrSub.CT.DeleteUsersRevokedEntitlementsDescr)Delete Users with Revoked Entitlements</description>
+              <conditions>
+                <and>
+                  <if-global-variable name="on-account-remove" op="equal">delete</if-global-variable>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-entitlement name="ScriptingAccount" op="changing"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-removed-entitlement name="ScriptingAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-delete-dest-object/>
+                    <do-remove-association when="before">
+                      <arg-association>
+                        <token-association/>
+                      </arg-association>
+                    </do-remove-association>
+                    <do-veto/>
+                  </arg-actions>
+                </do-for-each>
+              </actions>
+            </rule>
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SCRIPTING.UserAcctPolicy" attr-name="rope-in"/>
+              <description>xlfid(ScrSub.CT.DisableUsersRevokedEntitlementsDescr)Disable Users with Revoked Entitlements</description>
+              <conditions>
+                <and>
+                  <if-global-variable name="on-account-remove" op="equal">disable</if-global-variable>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-entitlement name="ScriptingAccount" op="changing"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-removed-entitlement name="UserAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-set-dest-attr-value name="Login Disabled">
+                      <arg-value type="state">
+                        <token-text>true</token-text>
+                      </arg-value>
+                    </do-set-dest-attr-value>
+                  </arg-actions>
+                </do-for-each>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-added-entitlement name="ScriptingAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-set-dest-attr-value name="Login Disabled">
+                      <arg-value type="state">
+                        <token-text>false</token-text>
+                      </arg-value>
+                    </do-set-dest-attr-value>
+                  </arg-actions>
+                </do-for-each>
+              </actions>
+            </rule>
+            -->
+          </policy>
+        </rule>        
+        <rule name="Password(Sub)-Transform Distribution Password">
+          <policy>
+            <description>xlfid(ScrSub.CT.TransformNMASAttrDescr)Transform NMAS Attribute to password Elements</description>
+            <rule>
+              <description>xlfid(ScrSub.CT.ConvertAddNSPMToPasswordDescr)Convert Adds of the nspmDistributionPassword Attribute to password Elements</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-op-attr name="nspmDistributionPassword" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Change all add-attr elements for the nspmDistributionPassword attribute to password elements-->
+                <do-set-dest-password>
+                  <arg-string>
+                    <token-xpath expression="add-attr[@attr-name='nspmDistributionPassword']//value"/>
+                  </arg-string>
+                </do-set-dest-password>
+                <!-- Remove all add-attr elements for the nspmDistributionPassword attribute -->
+                <do-strip-op-attr name="nspmDistributionPassword"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.BlockModifiesForFailedPassPubDescr)Block Modifies for Failed Password Publish Operations If Reset Password Is False</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="reset-external-password-on-failure" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword' and @failed-sync='true']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block a password reset -->
+                <do-veto/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.ConvertModifiesNSPMToPasswordDescr)Convert Modifies of a nspmDistributionPassword Attribute to a Modify Password Operation</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-op-attr name="nspmDistributionPassword" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Change all modify-attr elements for the nspmDistributionPassword attribute to modify-password elements-->
+                <do-set-dest-password>
+                  <arg-string>
+                    <token-xpath expression="modify-attr[@attr-name='nspmDistributionPassword']//add-value//value"/>
+                  </arg-string>
+                </do-set-dest-password>
+                <!-- Remove all add-attr elements for the nspmDistributionPassword attribute -->
+                <do-strip-op-attr name="nspmDistributionPassword"/>
+                <!-- Add an event-id attribute to the modify-password command we just added, required for operation data -->
+                <do-set-xml-attr expression="../modify-password" name="event-id">
+                  <arg-string>
+                    <token-text>pwd-subscribe</token-text>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.BlockEmptyModifyOps)Block Empty Modify Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="not-true">modify-attr</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Veto empty modify -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Sub)-Check Password GCV">
+          <policy>
+            <description>xlfid(ScrSub.CT.SubscriberPasswordChangesDescr)Subscribe to Password Changes</description>
+            <rule>
+              <description>xlfid(ScrSub.CT.BlockSubPasswordsWhenAddedDescr)Block Subscribing to Passwords When Objects Are Added</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-subscribe" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.BlockSubPasswordModsDescr)Block Subscribing to Password Modifications</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-subscribe" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Sub)-Add Password Payload">
+          <policy>
+            <description>xlfid(ScrSub.CT.PayloadsForSubToPasswordDescr)Payloads for subscribe to password changes</description>
+            <rule>
+              <description>xlfid(ScrSub.CT.AddOpDataToPassSubDescr)Add operation-data Element to Password Subscribe Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="." name="operation-data"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.AddPayloadToResetPassDescr)Add Payload Data to a Reset Password from a Failed Password Publish Operation</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="true">self::modify-password[@event-id = 'pwd-publish-failed']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-reset-status"/>
+                <do-append-xml-element expression="operation-data/password-reset-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-reset-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+            <rule>
+              <description>xlfid(ScrSub.CT.AddPayloadToPassSubDescr)Add Payload Data to Password Subscribe Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="true">self::modify-password[@event-id != 'pwd-publish-failed']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-subscribe-status"/>
+                <do-append-xml-element expression="operation-data/password-subscribe-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-subscribe-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+      </children>
+    </subscriber>
+
+    <rule name="Password(Pub)-Sub Email Notifications">
+      <policy>
+        <description>xlfid(ITEmailPolicyDescr)E-Mail Notifications for Failed Password Subscriptions</description>
+        <rule>
+          <description>xlfid(SendEmailOnFailedSubscribeDescr)Send E-Mail on a Failure When Subscribing to Passwords</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success'][text() != '']/operation-data/password-subscribe-status/association[text() != '']</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Set Fail">
+              <arg-string name="UserFullName">
+                <token-dest-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-dest-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-dest-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text></token-text>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-dest-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+        <rule>
+          <description>xlfid(SendEmailOnFailedSubResetDescr)Send E-Mail on Failure to Reset Connected System Password Using the Identity Vault Password</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success']/operation-data/password-reset-status</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Reset Fail">
+              <arg-string name="UserFullName">
+                <token-dest-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-dest-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-dest-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text></token-text>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-dest-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+      </policy>
+    </rule>
+
+    <rule name="Password(Sub)-Pub Email Notifications">
+      <policy>
+        <description>xlfid(ScrSub.OT.EMailNotForFailedPassPubDescr)E-Mail Notifications for Failed Password Publications</description>
+        <rule>
+          <description>xlfid(ScrSub.OT.SendEMailForFailedPassPubDescr)Send E-Mail for a Failed Publish Password Operation</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success']/operation-data/password-publish-status</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Sync Fail">
+              <arg-string name="UserFullName">
+                <token-src-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-src-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-src-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-src-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text/>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+      </policy>
+    </rule>
+
+    <rule name="Scripting Schema Mapping">
+        <attr-name-map>
+            <class-name>
+                <nds-name>User</nds-name>
+                <app-name>User</app-name>
+            </class-name>
+            <attr-name class-name="User">
+                <nds-name>CN</nds-name>
+                <app-name>CN</app-name>
+            </attr-name>
+            <class-name>
+                <nds-name>Group</nds-name>
+                <app-name>Group</app-name>
+            </class-name>
+            <attr-name class-name="Group">
+                <nds-name>CN</nds-name>
+                <app-name>CN</app-name>
+            </attr-name>
+            <attr-name class-name="Group">
+                <nds-name>Member</nds-name>
+                <app-name>Member</app-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>AccountDisabled</app-name>
+                <nds-name>Login Disabled</nds-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>FullName</app-name>
+                <nds-name>Full Name</nds-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>IsAccountLocked</app-name>
+                <nds-name>Locked By Intruder</nds-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>PasswordRequired</app-name>
+                <nds-name>Password Required</nds-name>
+            </attr-name>
+            <attr-name>
+                <app-name>Description</app-name>
+                <nds-name>Description</nds-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>AccountExpirationDate</app-name>
+                <nds-name>Login Expiration Time</nds-name>
+            </attr-name>
+            <attr-name class-name="User">
+                <app-name>PasswordExpirationDate</app-name>
+                <nds-name>Password Expiration Time</nds-name>
+            </attr-name>
+        </attr-name-map>
+    </rule>
+    <entitlement-definition name="ScriptingAccount">
+      <entitlement conflict-resolution="union" description="xlfid(UserAccountScriptingDescr)User Account in Scripting Application" display-name="xlfid(ScriptingUserAccountDisp)Scripting User Account">
+        <interpretive-variables>
+          <add-variable lossy="false" name="on-account-add"/>
+          <remove-variable lossy="true" name="on-account-remove"/>
+        </interpretive-variables>
+      </entitlement>
+    </entitlement-definition>
+  </children>
+  <xsl-modify>
+    <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:variable name="dataflow">
+        <variable-ref var-name="SCRIPTING.Dataflow"/>
+      </xsl:variable>
+      <!-- identity template -->
+      <xsl:template match="node()|@*">
+        <xsl:copy>
+          <xsl:apply-templates select="node()|@*"/>
+        </xsl:copy>
+      </xsl:template>
+      <!-- sets pub-disable option based on dataflow selection -->
+      <xsl:template match="pub-disabled">
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:choose>
+            <xsl:when test="$dataflow = 'Subscriber'">
+              <xsl:text>Yes</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="."/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:copy>
+      </xsl:template>
+      <!-- closes subscriber filter based on dataflow selection -->
+      <xsl:template match="filter-class">
+        <xsl:choose>
+          <xsl:when test="$dataflow = 'Publisher'">
+            <xsl:copy>
+              <xsl:attribute name="subscriber">ignore</xsl:attribute>
+              <xsl:apply-templates select="node()|@*[name() != 'subscriber']"/>
+            </xsl:copy>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy>
+              <xsl:apply-templates select="node()|@*"/>
+            </xsl:copy>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:template>
+    </xsl:transform>
+  </xsl-modify>
+</driver-configuration>
+

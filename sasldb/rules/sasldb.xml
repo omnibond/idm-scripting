@@ -1,0 +1,1303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<driver-configuration
+  description="xlfid(Descr)sasldb"
+  dn="sasldb.DriverSet.Services.YourOrganization"
+  driver-set-dn="DriverSet.Services.YourOrganization"
+  name="sasldb">
+
+  <variable-decl>
+    <text-var var-name="SASLDB.Dataflow"
+        description="xlfid(DataflowDescr)You can configure data flow for the driver now. Select the data flow that you desire. Bidirectional means that both the application and the Identity Vault are authoritative sources of the data synchronized between them. Application to Identity Vault means that the application is the authoritative source.  Identity Vault to Application means that the Identity Vault is the authoritative source."
+        prompt="xlfid(DataflowPrompt)Configure Data Flow:">
+      <dropdown>
+        <value display="xlfid(OptBidirectional)Bidirectional">Both</value>
+        <value display="xlfid(OptPublisher)Application to Identity Vault">Publisher</value>
+        <value display="xlfid(OptSubscriber)Identity Vault to Application">Subscriber</value>
+      </dropdown>
+    </text-var>
+
+    <text-var var-name="SASLDB.PublisherPollingInterval"
+      description="xlfid(PublisherPollingIntervalDescr)Specify a number for the Publisher polling interval, measured in seconds. [For example: '60']"
+      highlight="[]     "
+      prompt="xlfid(PublisherPollingIntervalPrompt)Polling Interval (Seconds):">60</text-var>
+
+    <text-var var-name="SASLDB.HeartBeatInterval">0</text-var>
+    <text-var var-name="SASLDB.DatabaseType">sasldb</text-var>
+
+    <text-var var-name="SASLDB.eDirBase"
+        browse="yes"
+        description="xlfid(eDirBaseDescr)Specify the base container in the Identity Vault for synchronization. This container is used in the Subscriber channel Event Transformation policies to limit the Identity Vault objects being synchronized and in the Publisher channel Placement policies when adding objects to the vault. For example: &#10;&#10; [users.myorg]"
+        highlight="[]-"
+        prompt="xlfid(eDirBasePrmpt)Base Container in eDirectory:"/>
+
+    <text-var var-name="SASLDB.Entitlements"
+        description="xlfid(EntitlementsDescr)Do you want this driver to use Approval Flow or Role-Based Entitlements with the Entitlements Service driver?"
+        highlight="[]"
+        prompt="xlfid(EntitlementsPrompt)Enable Entitlements:">
+      <dropdown>
+        <value display="xlfid(OptNo)No">false</value>
+        <value display="xlfid(OptYes)Yes">true</value>
+      </dropdown>
+    </text-var>
+
+    <text-var var-name="SASLDB.Domain"
+        prompt-mandatory="true"
+        description="xlfid(DomainDescr)Enter the user domain (authentication realm)."
+        prompt="xlfid(DomainPrompt)Domain:">
+    </text-var>
+
+    <text-var var-name="SASLDB.Appname"
+        prompt-mandatory="true"
+        description="xlfid(AppnameDescr)Enter the application name."
+        prompt="xlfid(AppnamePrompt)Application:">
+    </text-var>
+
+    <text-var var-name="SASLDB.FileDB"
+        description="xlfid(FileDBDescr)Enter the database filename, or leave empty for to use the system default."
+        prompt="xlfid(FileDBPrompt)Database File:">
+    </text-var>
+
+    <text-var var-name="SASLDB.RemoteHost"
+        description="xlfid(RemoteHostDescr)Specify the host name or IP address and port number where the driver is running (sasldb host system). The default port number is 8090. [Host Name or IP Address and Port; ###.###.###.###:####]"
+        highlight="[]-"
+        prompt="xlfid(RemoteHostPrompt)Remote Host Name and Port:"
+        prompt-mandatory="true"
+        prompt-type="ipa">xlfid(RemoteHostValue):8090</text-var>
+
+    <text-var var-name="SASLDB.UseSSL"
+        description="xlfid(RemoteHostUseSSLDescr)Choose whether to use Secure Sockets Layer (SSL) to encrypt the connection between the Identity Vault and the application."
+        highlight="[]"
+        prompt="xlfid(RemoteHostUseSSLPrompt)Use SSL:">
+        <dropdown>
+          <value display="xlfid(OptYes)Yes">true</value>
+          <value display="xlfid(OptNo)No">false</value>
+        </dropdown>
+    </text-var>
+
+    <text-var var-name="SASLDB.DriverPwd"
+        description="xlfid(DriverPswdDescr)The Driver Object Password is used by the Remote Loader to authenticate itself to the Metadirectory server. It must be the same password that is specified as the Driver Object Password on the Remote Loader."
+        highlight="[]-"
+        prompt="xlfid(DriverPswdPrompt)Driver Object Password:"
+        prompt-mandatory="true"
+        prompt-type="password"/>
+
+    <text-var var-name="SASLDB.RemotePwd"
+        description="xlfid(RemotePswdDescr)The Remote Loader password is used to control access to the Remote Loader instance. It must be the same password that is specified as the Remote Loader password on the Remote Loader."
+        highlight="[]-"
+        prompt="xlfid(RemotePswdPrompt)Remote Loader Password:"
+        prompt-mandatory="true"
+        prompt-type="password"/>
+
+  </variable-decl>
+
+
+  <!-- The following variable-decl sections are conditional prompting sections -->
+
+
+  <!-- SSL yes -->
+  <variable-decl use-when-var="SASLDB.UseSSL" use-when-value="true">
+    <node-var var-name="SASLDB.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="SASLDB.RemoteHost" part="ipa"/> port=<variable-ref var-name="SASLDB.RemoteHost" part="port"/> kmo="SSL CertificateIP")</node-var>
+    <node-var var-name="SASLDB.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="SASLDB.RemotePwd"/>)</node-var>
+  </variable-decl>
+
+  <!-- SSL no -->
+  <variable-decl use-when-var="SASLDB.UseSSL" use-when-value="false">
+    <node-var var-name="SASLDB.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="SASLDB.RemoteHost" part="ipa"/> port=<variable-ref var-name="SASLDB.RemoteHost" part="port"/>)</node-var>
+    <node-var var-name="SASLDB.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="SASLDB.RemotePwd"/>)</node-var>
+  </variable-decl>
+
+  <!-- Conditional First Panel for RBE/Approval Work Flow -->
+  <variable-decl use-when-var="SASLDB.Entitlements" use-when-value="true">
+    <text-var var-name="SASLDB.UserAcctPolicy"
+              description="xlfid(UserAcctDesc)User accounts can be managed by driver policy, or by granting sasldb user accounts through Approval Flow (AF) or Role Based Entitlements (RBE)."
+              prompt="xlfid(UserAcctPrmpt)User Account Policy">
+      <dropdown>
+        <value display="xlfid(OptUserAcctEntitlements)Use AF or RBE">entitlements</value>
+        <value display="xlfid(OptUserAcctPolicy)Implement in Policy">policy</value>
+      </dropdown>
+    </text-var>
+
+  </variable-decl>
+
+  <!-- Conditional Second Panel for Entitlements -->
+  <variable-decl use-when-var="SASLDB.UserAcctPolicy" use-when-value="entitlements">
+    <text-var var-name="SASLDB.EntAddAccount"
+        description="xlfid(EntAddAccountDescr)Choose what action is taken when a user account is added by Entitlements."
+        prompt="xlfid(EntAddAccountPrompt)Action On Applying sasldb Account Entitlement:">
+      <dropdown>
+        <value display="xlfid(OptAccountEnable)Enable the sasldb Account">enable</value>
+        <value display="xlfid(OptAccountDisable)Disable the sasldb Account">disable</value>
+      </dropdown>
+    </text-var>
+
+    <text-var var-name="SASLDB.EntRemoveAccount"
+        description="xlfid(EntRemoveAccountDescr)Choose what action is taken when a user account is removed by Entitlements."
+        prompt="xlfid(EntRemoveAccountPrompt)Action On Removing the sasldb Account Entitlement:">
+      <dropdown>
+        <value display="xlfid(OptAccountDisable)Disable the sasldb Account">disable</value>
+        <value display="xlfid(OptAccountDelete)Delete the sasldb Account">delete</value>
+      </dropdown>
+    </text-var>
+  </variable-decl>
+
+  <!-- Entitlements no -->
+  <variable-decl use-when-var="SASLDB.Entitlements" use-when-value="false">
+    <text-var var-name="SASLDB.EntAddAccount">enable</text-var>
+    <text-var var-name="SASLDB.EntRemoveAccount">disable</text-var>
+    <text-var var-name="SASLDB.UserAcctPolicy">policy</text-var>
+  </variable-decl>
+
+  <attributes>
+    <application-schema>
+      <schema-def />
+    </application-schema>
+    <configuration-manifest>
+      <manifest name="SASLDB">
+        <capability name="password-subscribe"/>
+        <capability name="password-publish"/>
+        <capability name="password-check"/>
+      </manifest>
+    </configuration-manifest>
+    <global-config-values>
+      <configuration-values>
+        <definitions>
+          <header display-name="Driver parameters"/>
+
+          <definition display-name="xlfid(ConnectedSystemGCV)Connected System or Driver Name" name="ConnectedSystemName" type="string">
+            <description>xlfid(ConnectedSystemGCVDescr)The name of the connected system, application or Identity Manager driver. This value is used by the e-mail notification templates.</description>
+            <value xml:space="preserve"><variable-ref var-name="System.DriverName"/></value>
+          </definition>
+
+          <header display-name="Approval Flow and Role Based Entitlement Selections" rope-in-value="entitlements">
+            <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+          </header>
+
+          <group rope-in-value="entitlements">
+            <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+
+            <definition display-name="xlfid(EntitlementActionApplyGCV)Action On Applying sasldb Account Entitlement"
+                        name="on-account-add" type="enum">
+              <value>
+                <variable-ref var-name="SASLDB.EntAddAccount"/>
+              </value>
+              <description>xlfid(EntitlementActionApplyGCVDescr)Choose what action is taken when a user account is removed by Entitlements.</description>
+              <enum-choice display-name="xlfid(EnableAccount)Enable the sasldb Account">enable</enum-choice>
+              <enum-choice display-name="xlfid(DisableAccount)Disable the sasldb Account">disable</enum-choice>
+            </definition>
+
+            <definition display-name="xlfid(EntitlementActionRemoveGCV)On Removing sasldb Account Entitlement"
+                        name="on-account-remove" type="enum">
+              <value>
+                <variable-ref var-name="SASLDB.EntRemoveAccount"/>
+              </value>
+              <description>xlfid(EntitlementActionRemoveGCVDescr)Specify the action you want the driver to take on an associated sasldb account when a user's sasldb account entitlement is removed in the Identity Vault.</description>
+              <enum-choice display-name="xlfid(DisableAccount)Disable the sasldb account">disable</enum-choice>
+              <enum-choice display-name="xlfid(DeleteAccount)Delete the sasldb account">delete</enum-choice>
+            </definition>
+          </group>
+
+          <header display-name="Password Management"/>
+
+          <group>
+            <definition name="pwd-mgt-display" display-name="Show Password Management Policy" type="enum">
+              <enum-choice display-name="xlfid(OptShow)Show">show</enum-choice>
+              <enum-choice display-name="xlfid(OptHide)Hide">hide</enum-choice>
+              <value>hide</value>
+            </definition> <!-- "group leader" definition is the value for displaying subordinates -->
+
+            <subordinates active-value="show">
+              <definition display-name="xlfid(EnablePasswordSubGCV)The sasldb Connected System Accepts Passwords from the Identity Vault" name="enable-password-subscribe" type="string">
+                <description>xlfid(EnablePasswordSubGCVDescr)If true, allows passwords to flow from the Identity Vault to the sasldb connected system.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnablePasswordPubGCV)The Identity Vault Accepts Passwords from the sasldb Connected System" name="enable-password-publish" type="string">
+                <description>xlfid(EnablePasswordPubGCVDescr)If true, allows passwords to flow from the sasldb connected system to the Identity Vault.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnablePasswordResetPubGCV)The Identity Vault Accepts Administrative Password Resets from the sasldb Connected System" name="enable-password-reset-publish" type="string">
+                <description>xlfid(EnablePasswordResetPubGCVDescr)If true, allows passwords to be reset from the sasldb connected system to the Identity Vault. This allows root to use the passwd command to set another user's password.</description>
+                <value xml:space="preserve">false</value>
+                <enum-choice display-name="xlfid(OptYes)Yes">true</enum-choice>
+                <enum-choice display-name="xlfid(OptNo)No">false</enum-choice>
+              </definition>
+              <definition display-name="xlfid(PublishToNdsGCV)Publish Passwords to NDS Password" name="publish-password-to-nds" type="string">
+                <description>xlfid(PublishToNdsGCVDescr)Use the password from the sasldb connected system to set the non-reversible NDS password in the Identity Vault.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(PublishToDpGCV)Publish Passwords to Distribution Password" name="publish-password-to-dp" type="string">
+                <description>xlfid(PublishToDpGCVDescr)Use the password from the sasldb connected system to set the NMAS Distribution Password used for Identity Manager password synchronization.</description>
+                <value xml:space="preserve">true</value>
+              </definition>
+              <definition display-name="xlfid(EnforcePwdPolicyGCV)Require Password Policy Validation before Publishing Passwords" name="enforce-password-policy" type="string">
+                <description>xlfid(EnforcePwdPolicyGCVDescr)If true, applies NMAS password policies during publish password operations. The password is not written to the Identity Vault if it does not comply.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(ResetPwdGCV)Reset User's External System Password to the Identity Manager Password on Failure" name="reset-external-password-on-failure" type="string">
+                <description>xlfid(ResetPwdGCVDescr)If true, on a publish Distribution Password failure, attempt to reset the password in the sasldb connected system using the Distribution Password from the Identity Vault.</description>
+                <value xml:space="preserve">false</value>
+              </definition>
+              <definition display-name="xlfid(NotifyGCV)Notify the User of Password Synchronization Failure via E-Mail" name="notify-user-on-password-dist-failure" type="boolean">
+                <description/>
+                <value>true</value>
+              </definition>
+            </subordinates>
+          </group>
+
+          <header display-name="User and Group Placement"/>
+
+          <group>
+            <definition name="placement-display" display-name="Show User and Group Placements" type="enum">
+              <enum-choice display-name="xlfid(OptShow)Show">show</enum-choice>
+              <enum-choice display-name="xlfid(OptHide)Hide">hide</enum-choice>
+              <value>hide</value>
+            </definition> <!-- "group leader" definition is the value for displaying subordinates -->
+
+            <subordinates active-value="show">
+              <definition display-name="xlfid(UserContainerPrompt)User Base Container" name="custom-user-container" type="dn" dn-space="dirxml" dn-type="slash">
+                <description>Container used to discover and provision users.</description>
+                <value>
+                  <variable-ref var-name="SASLDB.eDirBase"/>
+                </value>
+              </definition>
+              <definition display-name="xlfid(GroupContainerPrompt)Group Base Container" name="custom-group-container" type="dn" dn-space="dirxml" dn-type="slash">
+                <description>Container used to discover and provision groups.</description>
+                <value>
+                  <variable-ref var-name="SASLDB.eDirBase"/>
+                </value>
+              </definition>
+            </subordinates>
+          </group>
+
+        </definitions>
+      </configuration-values>
+    </global-config-values>
+    <driver-filter-xml>
+      <filter>
+        <filter-class class-name="Group" publisher="sync" subscriber="sync">
+          <filter-attr attr-name="CN" merge-authority="default" publisher="sync" subscriber="sync"/>
+          <filter-attr attr-name="Member" merge-authority="default" publisher="sync" subscriber="sync"/>
+        </filter-class>
+        <filter-class class-name="User" publisher="sync" subscriber="sync">
+          <filter-attr attr-name="CN" merge-authority="default" publisher="sync" subscriber="sync"/>
+
+          <!-- Login Disabled is not synchronized if account is controlled by entitlements-->
+          <filter-attr attr-name="Login Disabled" merge-authority="default" publisher="sync"
+                       subscriber="sync" rope-in-value="policy">
+            <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+          </filter-attr>
+          <filter-attr attr-name="Login Disabled" merge-authority="default" publisher="ignore"
+                       subscriber="ignore" rope-in-value="entitlements">
+            <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+          </filter-attr>
+
+          <filter-attr attr-name="DirXML-EntitlementRef" merge-authority="edir" publisher="ignore"
+                       publisher-optimize-modify="true" subscriber="notify" rope-in-value="true">
+            <variable-ref var-name="SASLDB.Entitlements" attr-name="rope-in"/>
+          </filter-attr>
+
+          <filter-attr attr-name="nspmDistributionPassword" merge-authority="none" publisher="ignore" publisher-optimize-modify="false" subscriber="notify"/>
+        </filter-class>
+      </filter>
+    </driver-filter-xml>
+    <driver-image><![CDATA[R0lGODlhYgBPAPf/AP///x4eHrq6uuvr6/z8/CXAd/f39+3t7T09PTFosuTk5Kurq+no6S7Dfd/26/T09PPz89fX1+j58WNjYwAAAPn5+aSipENDQ7fq0jtiriwsLCUlJZybnODg4FBQUHVzd+jo6G1qbdbW1p7iwX/H6ZWSlbq5uk/MkRkZGZaTlnt6ffH69YjdtPX19XvZrLi4uKvmyt7e3jaIm5LhvCSX0oqKi9PS0yuphQCX2Rxut/7+/gN1vA9yuTdkrylrtQB7wQCU1wB4vrOytdfz5hQUFNri8BKHyUi3ldHR0gCa3L29vuj377W0tsLBwtrZ2tDQ0ACd35rR7Pf8+sDt2LGxscbFxsnJygCg4k1NTUfKjVtbW1rPmWXTngB+xObm5wCR1ACLz2/WpQCO0fr6+gkJCQCHzACEyQCBxgCk5v39/SbBeXC64ePi40ZGRszw33DXpmbToMzx4IGBgS6ajkCe0gCn6PDv8MDt1vLy8oWFhTTFgZaWlji5iA6W2s3NzQ4ODlR2uEDB8kOKpEanmjxqq5GQkgCp67SztR+/c/3+/bbE4WyJwmVlZT3HhgQEBPT09c7Y61nPl9/f4D3Ih9bV1ixxu9/w5efr9fb29ujn6MC/wA+N0YKBhIiFiDWsi1VVVVO3nnl2eYSDhuXl5SN8xGC0352x13d3d/b19vv7+3iTx+Lh4o6Mj25tcKalp8LO5iAgIA+S1qmnqThup0dss9TU1PL2+5Gn0ZCOkYB+gDU1NYWdzB0dHQaZ3Dk5Oenp6bu6u9DP0CPAduDf4J6doOzs7Ovq66+usOPj42loajR/ndPT1D7JiTCh2M/p9vX09a/Y7VrQmtTT1DDEf7u6vby8vD+p4be2t7/h8hCV1HZ1eHBucnHXqPf296m63B6Cyefn5/7//9/w+drh2SfBeP3//mB/vVCx4Nnc2re3tz3Bibu7u8/Oz/H18jOejzyVm+rp6jyukUB9p/Hx8evr7NXV1lCo2MPDwxaN0urq6s3m1mJgZHJyclbBnJmYm////yH5BAEAAP8ALAAAAABiAE8AAAj/AP8JHEiwoMGDCBMqXJjQy708+9po0IDg0ylZMTAx3Mixo8eNtU5toEABhQZfCDQEIEPhj5YXH2PKnGnQzileFDZsk+VnFR4DXmoJyHOB5CcrNJMqXYhEV8k9owBInUrVjhIEFIgQW8q1qxVYjvYVo0qWbIU9fxxx6Mp2ZgwNZAqVnUu2CgpHVNrq5ZimDYU8ZIsp8Zer1TZRxO4dIFuNDJEneyMnTEEBS4WpOqqJCvFBBSdRojipSFFFB9U9lQ1IXj0QEywiVqZCkJUsVKcSxFwtWOCKWIlO155NTVX0EGvWeSjswywrRK4SroRoqmLFShVNQlyVAGZaahNHn1Qf/6ySZ4KHC+jTq1/Pvr379++xENkQY6qmEJz8UWnyxIkkNmxI4sQTTVDhjx9TYdLGH04YFIEWKJAUwIQUVmjhhRhmqOGGASBQxVTF1JCLP4dY4YQXB+ABAQR4HOCFE1Yccsw8U7FCgSsFURGhBntIkmILDwQp5JBEFmnkkUgeCQFVTYRSAhVWxHDAI2MQYCUBYzxyQAxWUEHJVI0lQ1A6f/whyhh0panmmmy2aUEnrjThxAEGEJAGVWkQYMABTjTxoVRObIDAQDGsdEibiCaq6FyslCDEE148QkB3VOlAwCNeEDiVHb5oIFAqrVBQA5vIxCDJMB2kquqqrLbq6qutDv/jI6UAcEKMJnOOcedcaYzB5z1TGYDABi3808EfGgygJhsL7JNMK/x8IO201FZr7bXYWstPK5wYQBWcVUiCBwFqEoCHJLFJ1cKwxfxzzF9qKqFNKyp0wgouJaSg77789uvvvwDzW0IhNXCyDFUcLGAFGxCQmyYBELBxsFQH6KIBCP+cQkY6ad5TWw3+uEIFE+mYYPLJKKes8soso/wCEwsQ8wRVMC/ccLkR1yeVCAHoAs4/WgRQD13gqKBCIa68UEUw0lAiwtNQRy311FRXHTUlSFhhgiZUPeFKuOOWey4DU1EB3i//eBCAAnPpwIQ2uCzQhA0xeMHAAHjnrffefPf/7TffDMTAzjoPTDXPIbgeoCtdvR7AhrdS5UKBKHakHQAIc1XACpxNiOCFHagYYEAFpJdu+umop6766ZhsWcWXU1FyCKSS0iqVpZiOJVUxGvyxQAWWY15WC5zswQSkD6SShu2LNi9VGpgwIE0TmFAVjJx02omnngfQQ9UClSEV/FwPiGLBPejYMYYA7Lfv/vvwxy///OzbEUMTCAZLSZRTVnlllgc4QCqmgocNkIEVChCI2oRHlmfUQGEMc5jzJlipVDxgFE+4hhPIsop6nChFK2pRMWhElQlUphoDWeBcWsCKYwTDC6i4Uw8S4IMc8GAHQfiBEchCAiDgIAlQuAIa/+pgiEAAoABIRKIwECEMcjRAD43IwgkiAYcwuIAFMxgBDDCAjiocQ2dT6QY42NCBVSAjE/SYB5qoUoOcuIINKbzcCgvxqEwYwDQzrOENc9gFaFClhz8M4hCLeMQkFmCJTZyGHiYhxS3AgRtXzOIWp1CLashiYolKQw0cswfxKVCOwyvBIZDAAMjl0YY4/EEX7PFHHwJRiEQ0oiENSQ5FMvIEjnxDJLWIgSno4wnAsIAmdMcmJOyjJDVogng+yUCqtMBRpDQlDVHJxzOIYyqAfOUgZTlLJNZykVKkohWxyMspuGEcwQCGKyzQhMKlSRLb2BEHqlE5gqgwlEKwQSmlcv/KParyDCTApisFGctCdtOJUAxnFXc5STcMYRVP0MQCOOAPhbGDLA9Ixh+ykgy54cEg9yTLM/O5TwD0M5VdOAMNBBpIWBKym958YhSnuFByNnQIllAAJapwDVf4AxecIEsuHBGAT1jgEDYAHkhBKVJH6VOaekTpGcyADalkk6AvhSlCZ+rIcUqylw51wBIC94QqMEE7ZNkHEThwCD8cICEhdaZTS3rSapqhFFYdqEu5edAnMqORNf2qOYcg1na4KAZPUIIsyDIBFFDhAWlQSFynMtKn8nOa/kypGcpgCwBcda8GnSVCb7kFLni1nGFdwgoM8AA7KAAJ1GAsCkzAkMn/qmuuUKXmPzcbBc/qdZuhpeUTSWtahoKVsKqVQioqYL90TaWxtF2IbQFQWbpiVqqbbYZvcbCJTcQiFn3ogzUgcYMbJLG85fWEJ+IRjyOAIrDljANyVyCFROgAE5mSbXQly1S5kjS3mZ1qGcDgDEBWIgMITnCCkXgDBTtYEMW16XEdIAH6msYADECCfmvbX8ri9rJRteuASwHITWQAEmS5RAbMOwdalEURGehHhAUb1gpL4cIZ3rB0O3zb/4JYt5odcDayWYlFlMUcMiiAMlRRFkAIoqvGHSyFLQwADGu4hLPlcDM97GOTXlfEYBADDVxpYhRT5RazKEAGFEEWGB9B/5xRlu+U61vlHGN5v3DlMXU/7OUQ73bAYvjCQItMlldkYA4ZuARZnIxLLuhSwlOQc3JxfOXnZnnHW+6xZfsMZAGHWdCBjMWJyZKBWQCizRk4Ai4fGef53rjOlZYKdLW8Qj7X9c+f1iuhqbKIDOxi0TJQ6KMFK2n6JgLWOuZvpvfc5VsHOdctFbWZpWKKDLyCKjDmQyNnjFpXUzrZeV52dQGMXUCDWpsJMPJUiqAKRU8FEDLgKrdvKlYqWxncCJnuuH/sTxoYYbPQ1iY+Rk2XbN8yEvPGwB1Sa2xk35nW+Nz0relQCoAH+rd1SHea4J3QRg87vt52uKXxnG8975vT/v+kAzQsfm6CfiMDdClCBtzR8dJ+fJLFfvW9H47pWjf7yz+gAwA2YW6MJ4DJdOH4wR3d6jkfe+cjh3hTf+5noa+h6C1FQx8IPheDA/bmE07u0+0c9Z5H3LpVB4AzsK7NXW883oA9Lb3FLnJZX1rZPpc40IUOABoEPIhbZ/NULmGKzk7FFIRQx7bl3sucf5vneD87uXPIdxL8/QqkODVVqn3tqdiCFu+QYjTgAHYp2zgcdQfArM0+db2nHQDi+Hsv1kyWXt+CLLcghOhJ3/TkliP1q49869GuW74DoBkXDyQpXExqU6c4A4NYNeMj7eqxx1r1dw933omf8qlEIflJ6EX/D0xR6EMnmiy7mIX0o1xje5Pd7iQ/yHTpgQukcj+VxrcF+L9BC8NPBc1q5g1kIXODYHO9537XF3zaF0r2N3lBRxXncG4J8GvApmRIx2vyYICQ5njAl30lJ26i5HrFRxVRAGpGcH5UIXMslgH+JxWQkAGgkHCm13BQB39SJ1cNSEE6qCg1iH3xt1Qg2GU7OIRq0oMK+IG1NkqlpAP004RO+IRN2IE/WBDTZQAcQAVPYEfMQ4RcWGczA3kLSBYEcAzH4AejEENdmIa3YwCZYAP4Jn8B8At04TVWsAoNs4VqOEFpgAqjsEFgiBBYEABsQBcPwASJUyd4mIeKogOpMA8x/0BMUgEhMLEQ+xAA10cVmWACPWEHBpAKV/KJoBiKojiKpFiKBLBcD5AJ8FAWbcALSsAQKhAA16AmB8AOTyAJ+WAH87AivNiLvviLwBiMwgiMeGAHBwACdlAWBMALGwAZC/EucrAmqWAHyIAM4PALxvA32riN3Ng3xvALAzAPl1EWJkAGvhADDIEMRAALysImiaiIQ6gFFMAPA8AQBHAKFBCN8LiPa7IOZIACTLBMCvEWjrAA/HiQZWEDI5ELDcIRAkAEjpALbIOQ/DgPshAAFDAB90AAHlENGpATNfACSDAKClCSJnmSKJmSKrmSLNmSLNknHFAUZMAISvAAMdEBclywUUTFITzZkz75kxNCEhdQA1Vgk27hCqfQBgiwlEzZlE75lFAZlVI5lVSJBclQAi+ADKnQFQYADk4gAhEQlmI5lmRZlmZ5lmiZlmUJlh1wAJF1HHAZl3I5l2wREAA7]]></driver-image>
+    <java-module value="com.novell.nds.dirxml.remote.driver.DriverShimImpl"/>
+
+    <mapping-rule dn="sasldb Schema Mapping.sasldb.DriverSet.Services.YourOrganization"/>
+    <input-transform/>
+    <output-transform dn="Password(Sub)-Pub Email Notifications.sasldb.DriverSet.Services.YourOrganization"/>
+    <driver-start-option value="1"/>
+    <driver-cache-limit value="0"/>
+    <shim-auth-server>
+      <variable-ref attr-name="value" var-name="SASLDB.Remote"/>
+    </shim-auth-server>
+    <shim-auth-password>
+      <variable-ref attr-name="password" var-name="SASLDB.Remote.Pwd"/>
+    </shim-auth-password>
+    <driver-password>
+      <variable-ref attr-name="password" var-name="SASLDB.DriverPwd"/>
+    </driver-password>
+    <shim-config-info-xml>
+      <driver-config name="sasldb Driver">
+        <driver-options>
+          <database-type display-name="xlfid(DatabaseTypePrompt)Database Type">
+            <variable-ref var-name="SASLDB.DatabaseType"/>
+          </database-type>
+          <sasl-domain display-name="xlfid(DomainPrompt)Domain">
+            <variable-ref var-name="SASLDB.Domain"/>
+          </sasl-domain>
+          <sasl-app-name display-name="xlfid(ApplicationPrompt)Application">
+            <variable-ref var-name="SASLDB.Appname"/>
+          </sasl-app-name>
+          <sasl-dbfile display-name="xlfid(FileDBPrompt)Database File">
+            <variable-ref var-name="SASLDB.FileDB"/>
+          </sasl-dbfile>
+          <auto-loopback-detection display-name="xlfid(AutomaticLoopbackDetectionPrompt)Automatic Loopback Detection">true</auto-loopback-detection>
+        </driver-options>
+        <subscriber-options>
+        </subscriber-options>
+        <publisher-options>
+          <pub-polling-interval display-name="xlfid(PublisherPollingIntervalPrompt)Publisher Polling Interval">
+            <variable-ref var-name="SASLDB.PublisherPollingInterval"/>
+          </pub-polling-interval>
+          <pub-heartbeat-interval display-name="xlfid(HeartBeatIntervalPrompt)Heartbeat Interval">
+            <variable-ref var-name="SASLDB.HeartBeatInterval"/>
+          </pub-heartbeat-interval>
+        </publisher-options>
+      </driver-config>
+    </shim-config-info-xml>
+  </attributes>
+  <children>
+    <publisher name="Publisher">
+      <attributes>
+        <event-transformation-rule dn="Event Transformation.Publisher.sasldb.DriverSet.Services.YourOrganization"
+            rope-in-value="entitlements">
+          <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+        </event-transformation-rule>
+        <event-transformation-rule rope-in-value="policy">
+          <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+        </event-transformation-rule>
+        <matching-rule dn="Matching Rule.Publisher.sasldb.DriverSet.Services.YourOrganization"/>
+        <create-rule dn="Create Rule.Publisher.sasldb.DriverSet.Services.YourOrganization"/>
+        <placement-rule dn="Placement Rule.Publisher.sasldb.DriverSet.Services.YourOrganization"/>
+        <command-transformation-rule dn="Password(Pub)-Check Password GCV.Publisher.sasldb.DriverSet.Services.YourOrganization"/>
+      </attributes>
+      <children>
+        <rule name="Event Transformation">
+          <policy>
+            <rule>
+              <description>Do Not Allow User Account Deletes from the sasldb System</description>
+              <comment xml:space="preserve">When using the User Account Entitlement, managed user accounts are controlled by the entitlement in the Identity Vault. A delete in the sasldb system does not delete the controlling object in the Identity Vault. A future change to the object in the Identity Vault or a merge operation will recreate the account in the sasldb system.</comment>
+              <conditions>
+                <and>
+                  <if-operation op="equal">delete</if-operation>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-remove-association when="after">
+                  <arg-association>
+                    <token-association/>
+                  </arg-association>
+                </do-remove-association>
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Matching Rule">
+          <policy>
+            <description>Publisher Matching Policy</description>
+            <rule>
+              <description>Match by CN for User Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subordinates">
+                  <arg-dn>
+                    <token-global-variable name="custom-user-container"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+            <rule>
+              <description>Match by CN for Group Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">Group</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subordinates">
+                  <arg-dn>
+                    <token-global-variable name="custom-group-container"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Create Rule">
+          <policy>
+            <description>Check Identity Manager Requirements for Users</description>
+            <rule>
+              <description>Add Required Surname and UniqueID</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-attr name="CN" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-add-dest-attr-value name="Surname">
+                  <arg-value type="string">
+                    <token-xpath expression="./add-attr[@attr-name='CN']/value"/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <do-add-dest-attr-value name="uniqueID">
+                  <arg-value type="string">
+                    <token-xpath expression="./add-attr[@attr-name='CN']/value"/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Placement Rule">
+          <policy>
+            <description>Publisher Placement Policy</description>
+            <rule>
+              <description>Place User Objects in the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-set-op-dest-dn>
+                  <arg-dn>
+                    <token-global-variable name="custom-user-container"/>
+                    <token-text xml:space="preserve">\</token-text>
+                    <token-lower-case>
+                      <token-src-name/>
+                    </token-lower-case>
+                  </arg-dn>
+                </do-set-op-dest-dn>
+              </actions>
+            </rule>
+            <rule>
+              <description>Place Group Objects in the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-class-name op="equal">Group</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-set-op-dest-dn>
+                  <arg-dn>
+                    <token-global-variable name="custom-group-container"/>
+                    <token-text xml:space="preserve">\</token-text>
+                    <token-lower-case>
+                      <token-src-name/>
+                    </token-lower-case>
+                  </arg-dn>
+                </do-set-op-dest-dn>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+        <rule name="Password(Pub)-Check Password GCV" next-transform="Password(Pub)-Publish Distribution Password.Publisher.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <description>Publish Passwords</description>
+            <rule>
+              <description>Block Publishing Passwords to the Identity Vault When Adding an Object</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Publishing Password Resets to the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-reset-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">./old-password</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <do-veto/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Sending Modify Password Event to the Identity Vault</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-publish" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Publish Distribution Password" next-transform="Password(Pub)-Publish NDS Password.Publisher.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <description>Publish Passwords to NMAS Distribution Password</description>
+            <rule>
+              <description>Add nspmDistributionAttribute Attribute to Add Operation</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-dp" op="equal">true</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add add-attr element for nspmDistributionPassword attribute -->
+                <do-add-dest-attr-value name="nspmDistributionPassword">
+                  <arg-value>
+                    <token-password/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <!-- Add a validate-password attribute to previous add-attr element -->
+                <do-set-xml-attr expression="add-attr[@attr-name = 'nspmDistributionPassword'][last()]" name="enforce-password-policy">
+                  <arg-string>
+                    <token-global-variable name="enforce-password-policy"/>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+            <rule>
+              <description>Change modify-password Operations to Modify</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-dp" op="equal">true</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add modify-attr element for nspmDistributionPassword attribute -->
+                <do-add-dest-attr-value name="nspmDistributionPassword">
+                  <arg-value>
+                    <token-password/>
+                  </arg-value>
+                </do-add-dest-attr-value>
+                <!-- Add a event-id attribute to previous modify element -->
+                <do-set-xml-attr expression="../modify" name="event-id">
+                  <arg-string>
+                    <token-text>pwd-publish</token-text>
+                  </arg-string>
+                </do-set-xml-attr>
+                <!-- Add a validate-password attribute to previous add-attr element -->
+                <do-set-xml-attr expression="../modify/modify-attr[@attr-name='nspmDistributionPassword']" name="enforce-password-policy">
+                  <arg-string>
+                    <token-global-variable name="enforce-password-policy"/>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Publish NDS Password" next-transform="Password(Pub)-Add Password Payload.Publisher.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <description>Publish Passwords to NDS Password</description>
+            <rule>
+              <description>Block Publishing Passwords to NDS Password</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-nds" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Sending modify-password Events to NDS Password</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="publish-password-to-nds" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Pub)-Add Password Payload">
+          <policy>
+            <description>Publish Password Payloads</description>
+            <rule>
+              <description>Add operation-data Element to Password Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-xpath op="true">add-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="." name="operation-data"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Add Payload Data to Password Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-xpath op="true">add-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-publish-status"/>
+                <do-append-xml-element expression="operation-data/password-publish-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-publish-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+      </children>
+    </publisher>
+    <subscriber name="Subscriber">
+      <attributes>
+        <event-transformation-rule dn="Event Transformation.Subscriber.sasldb.DriverSet.Services.YourOrganization"/>
+        <matching-rule dn="Matching Rule.Subscriber.sasldb.DriverSet.Services.YourOrganization"/>
+        <create-rule dn="Create Rule.Subscriber.sasldb.DriverSet.Services.YourOrganization"/>
+        <command-transformation-rule dn="Command Transformation.Subscriber.sasldb.DriverSet.Services.YourOrganization"/>
+      </attributes>
+      <children>
+        <rule name="Event Transformation">
+          <policy>
+            <rule>
+              <description>Container based scope filtering</description>
+              <conditions>
+                <and>
+                  <if-src-dn op="available"/>
+                  <if-src-dn op="not-in-subtree"><variable-ref var-name="SASLDB.eDirBase"/></if-src-dn>
+                  <if-association op="not-associated"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Matching Rule">
+          <policy>
+            <description>Subscriber Matching Policy</description>
+
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+              <description>Do Not Match Existing Accounts If Using User Account Entitlements</description>
+              <comment xml:space="preserve">When using the User Account entitlement with Approval Flow or Role Based Entitlements, accounts are created and deleted or disabled by granting or revoking the entitlement. Default policy does not match an existing account in the sasldb system, because that account existed outside of entitlements. Replace this rule with your own mathcing policy to allow entitled accounts to match existing accounts in the sasldb system.</comment>
+              <conditions>
+                <and>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                </and>
+              </conditions>
+              <actions>
+                <do-break/>
+              </actions>
+            </rule>
+
+            <rule>
+              <description>Match by CN for User Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subtree">
+                  <arg-dn>
+                    <token-attr name="CN"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+            <rule>
+              <description>Match by CN for Group Objects</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-class-name op="equal">Group</if-class-name>
+                  <if-op-attr op="available" name="CN"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-find-matching-object scope="subtree">
+                  <arg-dn>
+                    <token-attr name="CN"/>
+                  </arg-dn>
+                  <arg-match-attr name="CN"/>
+                </do-find-matching-object>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Create Rule">
+          <policy>
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+              <description>Block Account Creation When Entitlement Is Not Granted</description>
+              <comment xml:space="preserve">When using the User Account entitlement with Approval Flow or Role Based Entitlements, accounts are created only for users that are specifically granted the account entitlement. This rule vetoes user account creation when the entitlement is not granted.</comment>
+              <conditions>
+                <and>
+                  <if-class-name mode="nocase" op="equal">User</if-class-name>
+                  <if-entitlement name="UserAccount" op="not-available"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-veto/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Require CN Attribute</description>
+              <conditions/>
+              <actions>
+                <do-veto-if-op-attr-not-available name="CN"/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Command Transformation" next-transform="Password(Sub)-Transform Distribution Password.Subscriber.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+              <description>Delete Users with Revoked Entitlements</description>
+              <conditions>
+                <and>
+                  <if-global-variable name="on-account-remove" op="equal">delete</if-global-variable>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-entitlement name="sasldbAccount" op="changing"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-removed-entitlement name="sasldbAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-delete-dest-object/>
+                    <do-remove-association when="before">
+                      <arg-association>
+                        <token-association/>
+                      </arg-association>
+                    </do-remove-association>
+                    <do-veto/>
+                  </arg-actions>
+                </do-for-each>
+              </actions>
+            </rule>
+            <rule rope-in-value="entitlements">
+              <variable-ref var-name="SASLDB.UserAcctPolicy" attr-name="rope-in"/>
+              <description>Disable Users with Revoked Entitlements</description>
+              <conditions>
+                <and>
+                  <if-global-variable name="on-account-remove" op="equal">disable</if-global-variable>
+                  <if-class-name op="equal">User</if-class-name>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-entitlement name="sasldbAccount" op="changing"/>
+                </and>
+              </conditions>
+              <actions>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-removed-entitlement name="UserAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-set-dest-attr-value name="Login Disabled">
+                      <arg-value type="state">
+                        <token-text>true</token-text>
+                      </arg-value>
+                    </do-set-dest-attr-value>
+                  </arg-actions>
+                </do-for-each>
+                <do-for-each>
+                  <arg-node-set>
+                    <token-added-entitlement name="sasldbAccount"/>
+                  </arg-node-set>
+                  <arg-actions>
+                    <do-set-dest-attr-value name="Login Disabled">
+                      <arg-value type="state">
+                        <token-text>false</token-text>
+                      </arg-value>
+                    </do-set-dest-attr-value>
+                  </arg-actions>
+                </do-for-each>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Sub)-Transform Distribution Password" next-transform="Password(Sub)-Check Password GCV.Subscriber.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <description>Transform NMAS Attribute to password Elements</description>
+            <rule>
+              <description>Convert Adds of the nspmDistributionPassword Attribute to password Elements</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-op-attr name="nspmDistributionPassword" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Change all add-attr elements for the nspmDistributionPassword attribute to password elements-->
+                <do-set-dest-password>
+                  <arg-string>
+                    <token-xpath expression="add-attr[@attr-name='nspmDistributionPassword']//value"/>
+                  </arg-string>
+                </do-set-dest-password>
+                <!-- Remove all add-attr elements for the nspmDistributionPassword attribute -->
+                <do-strip-op-attr name="nspmDistributionPassword"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Modifies for Failed Password Publish Operations If Reset Password Is False</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="reset-external-password-on-failure" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="true">modify-attr[@attr-name='nspmDistributionPassword' and @failed-sync='true']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block a password reset -->
+                <do-veto/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Convert Modifies of a nspmDistributionPassword Attribute to a Modify Password Operation</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-op-attr name="nspmDistributionPassword" op="available"/>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Change all modify-attr elements for the nspmDistributionPassword attribute to modify-password elements-->
+                <do-set-dest-password>
+                  <arg-string>
+                    <token-xpath expression="modify-attr[@attr-name='nspmDistributionPassword']//add-value//value"/>
+                  </arg-string>
+                </do-set-dest-password>
+                <!-- Remove all add-attr elements for the nspmDistributionPassword attribute -->
+                <do-strip-op-attr name="nspmDistributionPassword"/>
+                <!-- Add an event-id attribute to the modify-password command we just added, required for operation data -->
+                <do-set-xml-attr expression="../modify-password" name="event-id">
+                  <arg-string>
+                    <token-text>pwd-subscribe</token-text>
+                  </arg-string>
+                </do-set-xml-attr>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Empty Modify Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify</if-operation>
+                  <if-xpath op="not-true">modify-attr</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Veto empty modify -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Sub)-Check Password GCV" next-transform="Password(Sub)-Add Password Payload.Subscriber.sasldb.DriverSet.Services.YourOrganization">
+          <policy>
+            <description>Subscribe to Password Changes</description>
+            <rule>
+              <description>Block Subscribing to Passwords When Objects Are Added</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-subscribe" op="equal">false</if-global-variable>
+                  <if-operation op="equal">add</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Remove all password elements from add -->
+                <do-strip-xpath expression="password"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Block Subscribing to Password Modifications</description>
+              <conditions>
+                <and>
+                  <if-global-variable mode="nocase" name="enable-password-subscribe" op="equal">false</if-global-variable>
+                  <if-operation op="equal">modify-password</if-operation>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Block all modify-passwords -->
+                <do-veto/>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+        <rule name="Password(Sub)-Add Password Payload">
+          <policy>
+            <description>Payloads for subscribe to password changes</description>
+            <rule>
+              <description>Add operation-data Element to Password Subscribe Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="not-true">operation-data</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="." name="operation-data"/>
+              </actions>
+            </rule>
+            <rule>
+              <description>Add Payload Data to a Reset Password from a Failed Password Publish Operation</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="true">self::modify-password[@event-id = 'pwd-publish-failed']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-reset-status"/>
+                <do-append-xml-element expression="operation-data/password-reset-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-reset-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+            <rule>
+              <description>Add Payload Data to Password Subscribe Operations</description>
+              <conditions>
+                <and>
+                  <if-operation op="equal">add</if-operation>
+                  <if-password op="available"/>
+                </and>
+                <and>
+                  <if-operation op="equal">modify-password</if-operation>
+                  <if-xpath op="true">self::modify-password[@event-id != 'pwd-publish-failed']</if-xpath>
+                </and>
+              </conditions>
+              <actions>
+                <!-- Add a operation data payload element to pick up result of a password operation -->
+                <do-append-xml-element expression="operation-data" name="password-subscribe-status"/>
+                <do-append-xml-element expression="operation-data/password-subscribe-status" name="association"/>
+                <do-append-xml-text expression="operation-data/password-subscribe-status/association">
+                  <arg-string>
+                    <token-association/>
+                  </arg-string>
+                </do-append-xml-text>
+              </actions>
+            </rule>
+          </policy>
+        </rule>
+
+      </children>
+    </subscriber>
+
+    <rule name="Password(Pub)-Sub Email Notifications">
+      <policy>
+        <description>xlfid(ITEmailPolicyDescr)E-Mail Notifications for Failed Password Subscriptions</description>
+        <rule>
+          <description>xlfid(SendEmailOnFailedSubscribeDescr)Send E-Mail on a Failure When Subscribing to Passwords</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success'][text() != '']/operation-data/password-subscribe-status/association[text() != '']</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Set Fail">
+              <arg-string name="UserFullName">
+                <token-dest-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-dest-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-dest-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text></token-text>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-dest-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-subscribe-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+        <rule>
+          <description>xlfid(SendEmailOnFailedSubResetDescr)Send E-Mail on Failure to Reset Connected System Password Using the Identity Vault Password</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success']/operation-data/password-reset-status</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Reset Fail">
+              <arg-string name="UserFullName">
+                <token-dest-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-dest-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-dest-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text></token-text>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-dest-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-reset-status/association"/>
+                  </arg-association>
+                </token-dest-attr>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+      </policy>
+    </rule>
+
+    <rule name="Password(Sub)-Pub Email Notifications">
+      <policy>
+        <description>E-Mail Notifications for Failed Password Publications</description>
+        <rule>
+          <description>Send E-Mail for a Failed Publish Password Operation</description>
+          <conditions>
+            <and>
+              <if-global-variable mode="nocase" name="notify-user-on-password-dist-failure" op="equal">true</if-global-variable>
+              <if-operation op="equal">status</if-operation>
+              <if-xpath op="true">self::status[@level != 'success']/operation-data/password-publish-status</if-xpath>
+            </and>
+          </conditions>
+          <actions>
+            <!-- generate email notification -->
+            <do-send-email-from-template notification-dn="\cn=security\cn=Default Notification Collection" template-dn="\cn=security\cn=Default Notification Collection\cn=Password Sync Fail">
+              <arg-string name="UserFullName">
+                <token-src-attr name="Full Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="UserGivenName">
+                <token-src-attr name="Given Name">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="UserLastName">
+                <token-src-attr name="Surname">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="ConnectedSystemName">
+                <token-global-variable name="ConnectedSystemName"/>
+              </arg-string>
+              <arg-string name="to">
+                <token-src-attr name="Internet Email Address">
+                  <arg-association>
+                    <token-xpath expression="self::status/operation-data/password-publish-status/association"/>
+                  </arg-association>
+                </token-src-attr>
+              </arg-string>
+              <arg-string name="FailureReason">
+                <token-text/>
+                <token-xpath expression="self::status/child::text()"/>
+              </arg-string>
+            </do-send-email-from-template>
+          </actions>
+        </rule>
+      </policy>
+    </rule>
+
+    <rule name="sasldb Schema Mapping">
+      <attr-name-map>
+        <class-name>
+          <nds-name>User</nds-name>
+          <app-name>User</app-name>
+        </class-name>
+        <attr-name class-name="User">
+          <nds-name>CN</nds-name>
+          <app-name>CN</app-name>
+        </attr-name>
+        <attr-name class-name="User">
+          <nds-name>Login Disabled</nds-name>
+          <app-name>Login Disabled</app-name>
+        </attr-name>
+        <class-name>
+          <nds-name>Group</nds-name>
+          <app-name>Group</app-name>
+        </class-name>
+        <attr-name class-name="Group">
+          <nds-name>CN</nds-name>
+          <app-name>CN</app-name>
+        </attr-name>
+        <attr-name class-name="Group">
+          <nds-name>Member</nds-name>
+          <app-name>Member</app-name>
+        </attr-name>
+      </attr-name-map>
+    </rule>
+    <entitlement-definition name="sasldbAccount">
+      <entitlement conflict-resolution="union" description="User Account in sasldb Account" display-name="sasldb User Account">
+        <interpretive-variables>
+          <add-variable lossy="false" name="on-account-add"/>
+          <remove-variable lossy="true" name="on-account-remove"/>
+        </interpretive-variables>
+      </entitlement>
+    </entitlement-definition>
+  </children>
+  <xsl-modify>
+    <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      <xsl:variable name="dataflow">
+        <variable-ref var-name="SASLDB.Dataflow"/>
+      </xsl:variable>
+      <!-- identity template -->
+      <xsl:template match="node()|@*">
+        <xsl:copy>
+          <xsl:apply-templates select="node()|@*"/>
+        </xsl:copy>
+      </xsl:template>
+      <!-- sets pub-disable option based on dataflow selection -->
+      <xsl:template match="pub-disabled">
+        <xsl:copy>
+          <xsl:apply-templates select="@*"/>
+          <xsl:choose>
+            <xsl:when test="$dataflow = 'Subscriber'">
+              <xsl:text>Yes</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="."/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:copy>
+      </xsl:template>
+      <!-- closes subscriber filter based on dataflow selection -->
+      <xsl:template match="filter-class">
+        <xsl:choose>
+          <xsl:when test="$dataflow = 'Publisher'">
+            <xsl:copy>
+              <xsl:attribute name="subscriber">ignore</xsl:attribute>
+              <xsl:apply-templates select="node()|@*[name() != 'subscriber']"/>
+            </xsl:copy>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:copy>
+              <xsl:apply-templates select="node()|@*"/>
+            </xsl:copy>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:template>
+    </xsl:transform>
+  </xsl-modify>
+</driver-configuration>
+

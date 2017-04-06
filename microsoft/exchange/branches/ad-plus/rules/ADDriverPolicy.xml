@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><policy>
+	<rule>
+		<description>Flag add events for Users and Groups</description>
+		<comment xml:space="preserve">Setting the detection attribute will cause the Exchange Management Shell Driver to create the user's mailbox. The attribute is set on both the operation and directly, so that when a merge of the user's attributes is done, the detection attribute is not removed.</comment>
+		<conditions>
+			<or>
+				<if-class-name mode="nocase" op="equal">User</if-class-name>
+				<if-class-name op="equal">Group</if-class-name>
+			</or>
+			<or>
+				<if-operation mode="nocase" op="equal">add</if-operation>
+			</or>
+		</conditions>
+		<actions>
+			<do-set-local-variable name="set-attribute-flag">
+				<arg-string>
+					<token-text xml:space="preserve">true</token-text>
+				</arg-string>
+			</do-set-local-variable>
+		</actions>
+	</rule>
+	<rule>
+		<description>Flag associated objects</description>
+		<comment xml:space="preserve">Sets the detection attribute as part of the current add event from AD, causing the Exchange Management Shell Driver to create the user's mailbox if necessary.</comment>
+		<conditions>
+			<and>
+				<if-local-variable name="set-attribute-flag" op="equal">true</if-local-variable>
+				<if-association op="associated"/>
+			</and>
+		</conditions>
+		<actions>
+			<do-set-local-variable name="set-direct-flag">
+				<arg-string>
+					<token-text xml:space="preserve">true</token-text>
+				</arg-string>
+			</do-set-local-variable>
+		</actions>
+	</rule>
+	<rule>
+		<description>Add auxiliary class to associated Group objects</description>
+		<conditions>
+			<and>
+				<if-local-variable name="set-direct-flag" op="available"/>
+				<if-class-name op="equal">Group</if-class-name>
+			</and>
+		</conditions>
+		<actions>
+			<do-add-dest-attr-value direct="true" name="Object Class">
+				<arg-value type="string">
+					<token-text xml:space="preserve">DirXML-ApplicationAttrs</token-text>
+				</arg-value>
+			</do-add-dest-attr-value>
+		</actions>
+	</rule>
+	<rule>
+		<description>Set Exchange Management Shell detection attribute in event</description>
+		<conditions>
+			<and>
+				<if-local-variable name="set-attribute-flag" op="available"/>
+			</and>
+		</conditions>
+		<actions>
+			<do-set-dest-attr-value name="DirXML-ExShellState">
+				<arg-value type="string">
+					<token-text xml:space="preserve">Enabled</token-text>
+				</arg-value>
+			</do-set-dest-attr-value>
+		</actions>
+	</rule>
+	<rule>
+		<description>Set Exchange Management Shell detection attribute directly</description>
+		<conditions>
+			<and>
+				<if-local-variable name="set-direct-flag" op="available"/>
+			</and>
+		</conditions>
+		<actions>
+			<do-set-dest-attr-value direct="true" name="DirXML-ExShellState">
+				<arg-value type="string">
+					<token-text xml:space="preserve">Enabled</token-text>
+				</arg-value>
+			</do-set-dest-attr-value>
+		</actions>
+	</rule>
+</policy>

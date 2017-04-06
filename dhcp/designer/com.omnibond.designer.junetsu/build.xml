@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="com.omnibond.designer.junetsu" default="buildandpackage" basedir=".">
+   <!-- Compiler settings. -->	
+   <property name="javacFailOnError" value="true"/>
+   <property name="javacDebugInfo" value="on"/>
+   <property name="javacVerbose" value="false"/>
+   <property name="javacSource" value="1.6"/>
+   <property name="javacTarget" value="1.6"/>
+   <property name="compilerArg" value=""/>
+   <path id="path_bootclasspath">
+      <fileset dir="${java.home}/lib">
+         <include name="*.jar"/>
+      </fileset>
+   </path>
+   <property name="bootclasspath" refid="path_bootclasspath"/>
+   	
+	<!-- initialize properties -->
+	<target name="init">
+      <property name="timestamp" value="200902131600"/>
+      <property name="plugin.version" value="0.9.2.v${timestamp}"/>
+		<property name="install.folder" value="${basedir}/install"/>
+		<property name="build.folder" value="${basedir}/build"/>
+		<property name="plugin.root.folder" value="${basedir}/install/com.omnibond.designer.junetsu_${plugin.version}"/>
+      <property name="eclipse.plugins.folder" value="/novell/eclipse3.4/eclipse/plugins"/>
+      <property name="eclipse.workspace.folder" value="/novell/eclipse3.4/eclipse/workspace"/>
+		<property name="jar.file" value="${plugin.root.folder}/designerjunetsu.jar"/>
+		<property name="zip.file" value="${install.folder}/com.omnibond.designer.junetsu_${plugin.version}.zip"/>
+   </target>
+	
+	<!-- make the root folder -->
+	<target name="make.folders">
+	   <mkdir dir="${plugin.root.folder}"/>
+		<mkdir dir="${build.folder}"/>
+	</target>
+	
+   <target name="build.source" unless="build.source.notRequired" description="Build Java source files">
+      <!-- compile the source code -->
+ 		<javac destdir="${build.folder}" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bootclasspath}">
+         <compilerarg line="${compilerArg}"/>
+         <src path="src/"/>
+         <classpath>
+            <fileset dir="${eclipse.plugins.folder}">
+               <include name="org.eclipse.ui*.jar"/>
+               <include name="org.eclipse.swt*.jar"/>
+               <include name="org.eclipse.swt.win32.win32.x86*.jar"/>
+               <include name="org.eclipse.jface*.jar"/>
+               <include name="org.eclipse.core.commands*.jar"/>
+               <include name="org.eclipse.ui.workbench*.jar"/>
+               <include name="org.eclipse.core.runtime*.jar"/>
+               <include name="org.eclipse.osgi*.jar"/>
+               <include name="org.eclipse.equinox.common*.jar"/>
+               <include name="org.eclipse.core.jobs*.jar"/>
+               <include name="org.eclipse.core.runtime.compatibility.registry*/runtime_registry_compatibility.jar"/>
+               <include name="org.eclipse.equinox.registry*.jar"/>
+               <include name="org.eclipse.equinox.preferences*.jar"/>
+               <include name="org.eclipse.core.contenttype*.jar"/>
+               <include name="org.eclipse.equinox.app*.jar"/>
+               <include name="org.eclipse.core.expressions*.jar"/>
+               <include name="org.eclipse.ui.forms*.jar"/>
+               <include name="org.eclipse.gef*.jar"/>
+               <include name="org.eclipse.draw2d*.jar"/>
+               <include name="org.eclipse.core.resources*.jar"/>
+               <include name="org.eclipse.emf.edit*.jar"/>
+               <include name="org.eclipse.emf.common*.jar"/>
+               <include name="org.eclipse.emf.ecore*.jar"/>
+               <include name="org.eclipse.emf.ecore.change*.jar"/>
+               <include name="org.eclipse.datatools.connectivity*.jar"/>
+               <include name="org.eclipse.datatools.enablement.mysql*.jar"/>
+               <include name="org.eclipse.datatools.enablement.mysql.dbdefinition*.jar"/>
+               <include name="org.eclipse.datatools.connectivity.db.generic*.jar"/>
+               <include name="org.eclipse.datatools.connectivity.sqm.core*.jar"/>
+            </fileset>
+            <dirset dir="${eclipse.workspace.folder}">
+               <include name="com.novell.core/bin/"/>
+               <include name="com.novell.core.datatools/bin/"/>
+            	<include name="com.novell.core.versioncontrol/bin/"/>
+               <include name="com.novell.designer.model/bin/"/>
+               <include name="com.novell.designer.versioncontrolprovider/bin/"/>            	
+               <include name="com.novell.idm/bin/"/>
+               <include name="com.novell.idm.modeler/bin/"/>            	
+            </dirset>
+            <fileset dir="${eclipse.workspace.folder}" includes="**/*.jar" excludes="com.novell.core.idsconfig/lib/*.jar"/>
+         </classpath>
+      </javac>
+   	<!-- create the jar file -->
+   	<jar destfile="${jar.file}" basedir="${build.folder}" excludes=".svn/**,**/Thumbs.db"/>
+   </target>
+	
+	<!-- copy/update ancillary files -->
+	<target name="copy.files" unless="copy.files.notRequired">
+		<copy todir="${plugin.root.folder}" failonerror="true" preservelastmodified="true">
+		   <fileset dir="${basedir}" includes="plugin.xml,plugin.properties,defs/,icons/,lib/"/>
+	   </copy>
+	</target>
+	
+   <!-- always copy and update the version in the manifest file -->
+	<target name="copy.manifest.file">
+      <copy todir="${plugin.root.folder}" overwrite="true">
+         <fileset dir="${basedir}" includes="META-INF/"/>
+      </copy>
+		<replace dir="${plugin.root.folder}" includes="**/MANIFEST.MF" token="qualifier" value="${timestamp}"/>
+	</target>
+	
+	<!-- create the distribution zip -->
+	<target name="zip.package" depends="init" unless="zip.package.notRequired">
+		<property name="plugin.root.prefix" value="com.omnibond.designer.junetsu_${plugin.version}"/>
+		<zip destfile="${zip.file}">
+			<zipfileset dir="${plugin.root.folder}" prefix="${plugin.root.prefix}" excludes=".svn/**,**/Thumbs.db"/>
+		</zip>
+	</target>
+
+	<!-- clean target -->
+	<target name="clean" depends="init" unless="clean.notRequired">
+	   <delete dir="${build.folder}"/>
+		<delete dir="${plugin.root.folder}"/>
+	</target>
+	
+	<!-- main target -->
+	<target name="buildandpackage" depends="init">
+		
+		<!-- do a clean if this build.xml changes -->
+		
+		<uptodate property="clean.notRequired" targetfile="${zip.file}" srcfile="${basedir}/build.xml"/>
+		<antcall target="clean"/>
+		
+
+		<!-- create the special folders -->
+		<antcall target="make.folders"/>
+		 
+		<!-- check source for changes -->
+		<uptodate property="build.source.notRequired" targetfile="${jar.file}">
+			<srcfiles dir="src/" includes="**/*.java"/>			
+   	</uptodate>
+		<antcall target="build.source"/>
+		
+		<!-- check files for changes -->
+		<uptodate property="copy.files.notRequired">
+		   <srcfiles dir="${basedir}" includes="plugin.xml,plugin.properties,defs/,icons/"/>
+			<mapper type="glob" from="*" to="${plugin.root.folder}/*"/>
+		</uptodate>		
+		<antcall target="copy.files"/>
+		
+		<!-- update manifest file -->
+		<antcall target="copy.manifest.file"/>
+		
+		<!-- only zip package if needed -->
+		<condition property="zip.package.notRequired">
+		   <and>
+			   <isset property="build.source.notRequired"/>
+		   	<isset property="copy.files.notRequired"/>
+		   	<not>
+		   		<available property="zip.available" file="${zip.file}"/>
+   			</not>
+       	</and>
+		</condition>
+		<antcall target="zip.package"/>
+		
+		<delete dir="${build.folder}"/>
+		
+   </target>
+</project>

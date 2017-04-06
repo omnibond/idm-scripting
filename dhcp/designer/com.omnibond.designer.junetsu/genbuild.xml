@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="com.omnibond.designer.junetsu">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../Novell/eclipse3.4/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="Plug-in Dependencies.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.4.0.I20080610-1200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt_3.4.0.v3448f.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt.win32.win32.x86_3.4.0.v3448f.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface_3.4.0.I20080606-1300.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.commands_3.4.0.I20080509-2000.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.4.0.I20080606-1300.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime_3.4.0.v20080512.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.osgi_3.4.0.v20080605-1900.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.common_3.4.0.v20080421-2006.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.jobs_3.4.0.v20080512.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.200.v20080610/runtime_registry_compatibility.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.registry_3.4.0.v20080516-0950.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.preferences_3.2.200.v20080421-2006.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.contenttype_3.3.0.v20080604-1400.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.app_1.1.0.v20080421-2006.jar"/>
+        <pathelement location="../../../../../com.novell.idm"/>
+        <pathelement location="../../../../../com.novell.designer"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.expressions_3.4.0.v20080603-2000.jar"/>
+        <pathelement location="../../../../../com.novell.designer.versioncontrolprovider"/>
+        <pathelement location="../../../../../com.novell.core"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.forms_3.3.100.v20080611.jar"/>
+        <pathelement location="../../../../../com.novell.idm.modeler"/>
+        <pathelement location="../../../../../com.novell.core.versioncontrol"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.gef_3.4.0.v20080526.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.draw2d_3.4.0.v20080529.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.4.0.v20080604-1400.jar"/>
+        <pathelement location="../../../../../com.novell.designer.model"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.emf.edit_2.4.0.v200806091234.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.emf.common_2.4.0.v200806091234.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.emf.ecore_2.4.0.v200806091234.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.emf.ecore.change_2.4.0.v200806091234.jar"/>
+        <pathelement location="../../../../../com.novell.core.datatools"/>
+        <pathelement location="../../../../../com.novell.core.jars"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.datatools.connectivity_1.1.0.v200805160228.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.datatools.enablement.mysql_1.0.0.v200805152355.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.datatools.enablement.mysql.dbdefinition_1.0.1.v200805170742.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.datatools.connectivity.db.generic_1.0.0.v200805152355.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.datatools.connectivity.sqm.core_1.0.1.v200806041052.jar"/>
+    </path>
+    <path id="com.omnibond.designer.junetsu.classpath">
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+        <pathelement location="bin"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="com.omnibond.designer.junetsu.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>

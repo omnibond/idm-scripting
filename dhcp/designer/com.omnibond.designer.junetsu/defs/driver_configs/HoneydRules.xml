@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<driver-configuration dn="Honeyd.Driverset.Services.YourOrganization" driver-set-dn="Driverset.Services.YourOrganization" name="Honeyd">
+   <variable-decl>
+
+       <text-var var-name="HONEYD.RemoteHost"
+             description="xlfid(RemoteHostDescr)Specify the host name or IP address and port number where the driver is running. The default port number is 8090. [Host Name or IP Address and Port; ###.###.###.###:####]"
+             highlight="[]-"
+             prompt="xlfid(RemoteHostPrompt)Remote Host Name and Port:"
+             prompt-mandatory="true"
+             prompt-type="ipa">xlfid(RemoteHostValue):8090</text-var>
+
+       <text-var var-name="HONEYD.RemotePwd"
+             description="xlfid(RemotePswdDescr)The Remote Loader password is used to control access to the Remote Loader instance. It must be the same password that is specified as the Remote Loader password on the Remote Loader."
+             highlight="[]-"
+             prompt="xlfid(RemotePswdPrompt)Remote Loader Password:"
+             prompt-mandatory="true"
+             prompt-type="password"/>
+
+       <text-var var-name="HONEYD.DriverPwd"
+             description="xlfid(DriverPswdDescr)The Driver Object Password is used by the Remote Loader to authenticate itself to the Metadirectory server. It must be the same password that is specified as the Driver Object Password on the Remote Loader."
+             highlight="[]-"
+             prompt="xlfid(DriverPswdPrompt)Driver Object Password:"
+             prompt-mandatory="true"
+             prompt-type="password"/>
+
+       <text-var var-name="HONEYD.eventTimeout"
+             description="xlfid(EventTimeoutDescr)If the driver gets backlogged or is shut down for some period of time you might not want old events to be published to the directory.  The computers that connected to the honey pot may no longer be infected by the time the events get published."
+             highlight="[]-"
+             prompt="xlfid(DiscardEventsPrompt)Discard events after this many hours:"
+             prompt-required="true">4</text-var>
+ 
+       <node-var var-name="HONEYD.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="HONEYD.RemoteHost" part="ipa"/> port=<variable-ref var-name="HONEYD.RemoteHost" part="port"/> kmo="SSL CertificateIP")</node-var>
+       <node-var var-name="HONEYD.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="HONEYD.RemotePwd"/>)</node-var>
+
+   </variable-decl>
+ 
+	<attributes>
+		<configuration-manifest>
+			<manifest name="SCRIPTING">
+				<capability name="password-subscribe"/>
+				<capability name="password-publish"/>
+				<capability name="password-check"/>
+			</manifest>
+		</configuration-manifest>
+		<driver-filter-xml>
+			<filter>
+				<filter-class class-name="DirXMLjnsuNetworkDevice" publisher="sync" publisher-create-homedir="true" publisher-track-template-member="false" subscriber="ignore">
+					<filter-attr attr-name="DirXMLjnsuDisabled" from-all-classes="true" merge-authority="default" publisher="sync" publisher-optimize-modify="true" subscriber="ignore"/>
+					<filter-attr attr-name="DirXMLjnsuDHCPAddress" merge-authority="default" publisher="notify" publisher-optimize-modify="true" subscriber="ignore"/>
+					<filter-attr attr-name="DirXMLjnsuInfectedPorts" merge-authority="default" publisher="sync" publisher-optimize-modify="true" subscriber="ignore"/>
+					<filter-attr attr-name="DirXMLjnsuInfected" merge-authority="default" publisher="sync" publisher-optimize-modify="true" subscriber="ignore"/>
+					<filter-attr attr-name="DirXMLjnsuDisabledTime" merge-authority="default" publisher="sync" publisher-optimize-modify="true" subscriber="ignore"/>
+				</filter-class>
+			</filter>
+		</driver-filter-xml>
+		<driver-image></driver-image>
+		<log-events inherit="true"/>
+		<trace-file value="/tmp/honeyd.log"/>
+		<trace-size-limit value="200000"/>
+		<trace-level value="10"/>
+		<driver-trace-level inherit="true"/>
+		<log-limit inherit="true"/>
+		<java-module value="com.novell.nds.dirxml.remote.driver.DriverShimImpl"/>
+		<policy-linkage>
+			<linkage-item dn="Scripting Schema Mapping.Honeyd.Driverset.Services.YourOrganization" order="0" policy-set="0" policy-set-name="Schema Mapping"/>
+			<linkage-item dn="Veto Old Events.Honeyd.Driverset.Services.YourOrganization" order="0" policy-set="1" policy-set-name="Input"/>
+			<linkage-item dn="Disable Registration XSLT.Honeyd.Driverset.Services.YourOrganization" order="1" policy-set="1" policy-set-name="Input"/>
+			<linkage-item dn="Veto add, modify, and delete events.Honeyd.Driverset.Services.YourOrganization" order="0" policy-set="2" policy-set-name="Output"/>
+			<linkage-item dn="Remove DHCP Address from operation.Publisher.Honeyd.Driverset.Services.YourOrganization" order="0" policy-set="11" policy-set-name="Publisher Command"/>
+		</policy-linkage>
+		<driver-cache-limit value="0"/>
+		<shim-auth-server>
+                	<variable-ref attr-name="value" var-name="HONEYD.Remote"/>
+		</shim-auth-server>
+                <shim-auth-password>
+                  <variable-ref attr-name="password" var-name="HONEYD.Remote.Pwd"/>
+                </shim-auth-password>
+                <driver-password>
+                  <variable-ref attr-name="password" var-name="HONEYD.DriverPwd"/>
+                </driver-password>
+		<driver-start-option no-resync="true" value="1"/>
+		<shim-config-info-xml>
+			<driver-config name="Scripting Driver">
+				<driver-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Automatic Loopback Detection:" name="auto-loopback-detection" type="enum">
+								<description>Choose 'Yes' if you wish to enable automatic loopback detection or 'No' to disable automatic loopback detection</description>
+								<value>true</value>
+								<enum-choice display-name="Yes">true</enum-choice>
+								<enum-choice display-name="No">false</enum-choice>
+							</definition>
+							<definition display-name="Script Command:" name="script-command" type="string">
+								<description>The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+								<description>Enter the command line that the driver will use to execute scripts.</description>
+								<value>cscript //nologo</value>
+							</definition>
+							<definition display-name="Script Trace File:" name="script-trace-file" type="string">
+								<description>The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+								<description>Enter the path and file name for the script trace file.</description>
+								<value>logs\script-trace.log</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</driver-options>
+				<subscriber-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Subscriber Script:" name="subscriber-script" type="string">
+								<description>The file to execute for Subscriber events.</description>
+								<value>subscriber.pl</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</subscriber-options>
+				<publisher-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Polling Script:" name="polling-script" type="string">
+								<description>The Polling file to execute for Publisher events.</description>
+								<value>poll.pl</value>
+							</definition>
+							<definition display-name="Heartbeat Script:" name="heartbeat-script" type="string">
+								<description>The Polling file to execute for Heartbeat.</description>
+								<value>heartbeat.pl</value>
+							</definition>
+							<definition display-name="Polling Interval (Seconds):" name="pub-polling-interval" type="string">
+								<description>The Publisher Polling Interval.</description>
+								<value>10</value>
+							</definition>
+							<definition display-name="Heartbeat Interval:" name="pub-heartbeat-interval" type="string">
+								<description>The Publisher Heartbeat Interval.</description>
+								<value>0</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</publisher-options>
+			</driver-config>
+		</shim-config-info-xml>
+		<global-engine-values>
+			<configuration-values>
+				<definitions>
+					<definition display-name="Subscriber channel retry interval in seconds" display-name-ref="ecnm_rint" name="dirxml.engine.retry-interval" range-lo="1" type="integer">
+						<description description-ref="ecds_rint">The subscriber channel retry interval controls how frequently the DirXML Engine will retry the processing of a cached transaction after the application shim's Subscriber object returns a retry status.</description>
+						<value>30</value>
+					</definition>
+					<definition display-name="Qualified form for DN-syntax attribute values" display-name-ref="ecnm_dnvf" name="dirxml.engine.qualified-dn-values" type="boolean">
+						<description description-ref="ecds_dnvf">The qualified form for DN-syntax attribute values controls whether values for DN-syntax attribute values are presented in unqualified slash form or qualified slash form. A "true" setting means the values are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Qualified form for rename events" display-name-ref="ecnm_refm" name="dirxml.engine.qualified-rename-values" type="boolean">
+						<description description-ref="ecds_refm">The qualified form for rename events controls whether the new-name portion of rename events coming from the Identity Vault are presented to the Subscriber channel with type qualifier(s) (e.g. CN=). A "true" setting means the names are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Maximum eDirectory replication wait time in seconds" display-name-ref="ecnm_mrpw" name="dirxml.engine.max-replication-wait" range-lo="1" type="integer">
+						<description description-ref="ecds_mrpw">The maximum eDirectory replication wait time controls the maximum time that the DirXML Engine will wait for a particular change to replicate between the local replica and a remote replica. This only affects operations where the DirXML Engine is required to contact a remote eDirectory server in the same tree to perform an operation and may need to wait until some change has replicated to or from the remote server before the operation can be completed (e.g. object moves when the DirXML server does not hold the master replica of the moved object ;file system rights operations for Users created from a template.)</description>
+						<value>180</value>
+					</definition>
+					<definition display-name="Use non-compliant backwards-compatible mode for XSLT" display-name-ref="ecnm_xbcm" name="dirxml.engine.xslt-bc-mode" type="boolean">
+						<description description-ref="ecds_xbcm">This control sets the XSLT processor used by the DirXML Engine to a backwards-compatible mode. The backwards-compatible mode causes the XSLT processor to use one or more behaviors that are not XPath 1.0 and/or XSLT 1.0 standards-compliant. This is done in the interest of backwards-compatiblity with existing DirXML stylesheets that depend on the non-standard behavior(s). 
+ 
+ In particular: 
+ 
+ The behavior of the XPath "!=" operator when one operand is a node-set and the other operand is other than a node-set is incorrect in DirXML releases up to and including DirXML 2.0 (Novell Identity Manager 2.0). This behavior has been corrected; however, the corrected behavior is disabled by default through this control in favor of backwards-compatibility with existing DirXML stylesheets.</description>
+						<value>true</value>
+					</definition>
+					<definition display-name="Maximum application objects to migrate at once" display-name-ref="ecnm_mxappm" name="dirxml.engine.max-migrate-app-count" range-lo="1" type="integer">
+						<description description-ref="ecds_mxappm">This control is used to limit the number of application objects that the DirXML Engine will request from an application during a single query that is performed as part of a "migrate objects from application" operation. 
+ 
+ If "java.lang.OutOfMemoryError" errors are encountered during a migrate from application operation then this number should be set lower than the default. 
+ 
+ Note that this control does not limit the number of application objects that can be migrated; it merely limits the "batch size".</description>
+						<value>50</value>
+					</definition>
+					<definition display-name="Set creatorsName on objects created in Identity Vault" display-name-ref="ecnm_scrnm" name="dirxml.engine.set-creators-name" type="boolean">
+						<description description-ref="ecds_scrnm">This control is used by the DirXML Engine to determine if the creatorsName attribute should be set to the DN of this driver on all objects created in the Identity Vault by this driver.
+ 
+ Setting the creatorsName attribute allows for easily identifying objects created by this driver, but also carries a performance penalty. If not set, the creatorsName attribute will default to the DN of the NCP Server object that is hosting the driver.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Write pending associations" display-name-ref="ecnm_pass" name="dirxml.engine.use-pending-association" type="boolean">
+						<description description-ref="ecds_pass">This control determines whether the DirXML Engine will write a pending association on an object during subscriber channel processing.
+ 
+ Writing a pending association confers little or no benefit but does incur a performance penalty. Nevertheless, the option exists to turn it on for backward compatibility.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Use password event values" display-name-ref="ecnm_pevvl" name="dirxml.engine.use-password-event-values" type="boolean">
+						<description description-ref="ecds_pevvl">This control determines the source of the value reported for the nspmDistributionPassword attribute for subscriber channel add and modify events.
+ 
+ Setting the control to false means that the current value of nspmDistributionPassword is obtained and reported as the value of the attribute event. This means that only the current password value is available. This is the default behavior.
+ 
+ Setting the control to true means that the value recorded with the eDirectory event will be decrypted and reported as the value of the attribute event. This means that both the old password value (if it exists) and the replacement password value at the time of the event are available. This is useful for synchronizing passwords to certain applications that require the old password to enable setting a new password.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Enable password synchronization status reporting" display-name-ref="ecnm_pss" name="dirxml.engine.pwd-sync-status" type="boolean">
+						<description description-ref="ecds_pss">This control determines whether the DirXML Engine will report the status of subscriber channel password change events. 
+ 
+ Reporting the status of subscriber channel password change events allows applications such as the Identity Manager User Application to monitor the synchronization progress of a password change that should be synchronized to the connected application.</description>
+						<value>true</value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-engine-values>
+		<global-config-values>
+			<configuration-values>
+				<definitions>
+					<definition display-name="Discard events after this many hours." name="eventTimoutInHours" type="string">
+						<description>If the driver gets backlogged or is shut down for some period of time you might not want events to be published to the directory.  The computers that connected to the honey pot may no longer be infected by the time the events get published.</description>
+					        <value><variable-ref var-name="HONEYD.eventTimeout"/></value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-config-values>
+		<application-schema/>
+	</attributes>
+	<children>
+		<publisher name="Publisher">
+			<attributes/>
+			<children>
+				<rule name="Remove DHCP Address from operation">
+					<policy>
+						<rule>
+							<description>Remove DHCP Address from Operation</description>
+							<conditions/>
+							<actions>
+								<do-strip-op-attr name="DirXMLjnsuDHCPAddress"/>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+			</children>
+		</publisher>
+		<subscriber name="Subscriber">
+			<attributes/>
+			<children>
+				<rule name="Add association">
+					<policy>
+						<rule>
+							<description>Add association</description>
+							<conditions>
+								<and>
+									<if-attr name="DirXMLjnsuDHCPAddress" op="available"/>
+								</and>
+							</conditions>
+							<actions>
+								<do-add-association when="before">
+									<arg-association>
+										<token-text xml:space="preserve" xmlns:xml="http://www.w3.org/XML/1998/namespace">jnsu-</token-text>
+										<token-src-attr name="DirXMLjnsuDHCPAddress"/>
+									</arg-association>
+								</do-add-association>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+			</children>
+		</subscriber>
+		<rule name="Scripting Schema Mapping">
+			<attr-name-map>
+				<class-name>
+					<app-name>DirXMLjnsuNetworkDevice</app-name>
+					<nds-name>DirXMLjnsuNetworkDevice</nds-name>
+				</class-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuDHCPAddress</app-name>
+					<nds-name>DirXMLjnsuDHCPAddress</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuDisabled</app-name>
+					<nds-name>DirXMLjnsuDisabled</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuInfectedPorts</app-name>
+					<nds-name>DirXMLjnsuInfectedPorts</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuDisabledTime</app-name>
+					<nds-name>DirXMLjnsuDisabledTime</nds-name>
+				</attr-name>
+			</attr-name-map>
+		</rule>
+		<rule name="Veto add, modify, and delete events">
+			<policy>
+				<rule>
+					<description>Veto add, modify and delete events</description>
+					<conditions>
+						<or>
+							<if-operation op="equal">modify</if-operation>
+							<if-operation op="equal">delete</if-operation>
+							<if-operation op="equal">add</if-operation>
+							<if-operation op="equal">rename</if-operation>
+							<if-operation op="equal">move</if-operation>
+						</or>
+					</conditions>
+					<actions>
+						<do-veto/>
+					</actions>
+				</rule>
+			</policy>
+		</rule>
+		<rule name="Veto Old Events">
+			<policy xmlns:Date="http://www.novell.com/nxsl/java/java.util.Date" xmlns:SimpleDateFormat="http://www.novell.com/nxsl/java/java.text.SimpleDateFormat">
+				<rule>
+					<description>Set event id as variable</description>
+					<conditions>
+						<and>
+							<if-operation op="equal">modify</if-operation>
+						</and>
+					</conditions>
+					<actions>
+						<do-set-local-variable name="event-timestamp-unparsed">
+							<arg-string>
+								<token-xpath expression="@event-id"/>
+							</arg-string>
+						</do-set-local-variable>
+						<do-set-local-variable name="event-timestamp">
+							<arg-string>
+								<token-substring length="14">
+									<token-local-variable name="event-timestamp-unparsed"/>
+								</token-substring>
+							</arg-string>
+						</do-set-local-variable>
+						<do-set-local-variable name="dateFormat">
+							<arg-object>
+								<token-xpath expression='SimpleDateFormat:new("yyyyMMddHHmmss")'/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="eventDate">
+							<arg-object>
+								<token-xpath expression="SimpleDateFormat:parse($dateFormat, $event-timestamp)"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="eventTime">
+							<arg-object>
+								<token-xpath expression="Date:getTime($eventDate)"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="currentDate">
+							<arg-object>
+								<token-xpath expression="Date:new()"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="currentTime">
+							<arg-object>
+								<token-xpath expression="Date:getTime($currentDate)"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="timeDiffinMilliseconds">
+							<arg-object>
+								<token-xpath expression="$currentTime - $eventTime"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="timeDiffinHours">
+							<arg-object>
+								<token-xpath expression="ceiling( (($timeDiffinMilliseconds div 1000) div 60) div 60 )"/>
+							</arg-object>
+						</do-set-local-variable>
+						<do-set-local-variable name="eventTimeoutInHours">
+							<arg-string>
+								<token-global-variable name="eventTimeoutInHours"/>
+							</arg-string>
+						</do-set-local-variable>
+					</actions>
+				</rule>
+				<rule>
+					<description>Veto if too old</description>
+					<conditions>
+						<and>
+							<if-xpath op="true">$timeDiffinHours >= $eventTimeoutInHours</if-xpath>
+						</and>
+					</conditions>
+					<actions>
+						<do-veto/>
+					</actions>
+				</rule>
+			</policy>
+		</rule>
+		<stylesheet name="Disable Registration XSLT">
+			<xsl:stylesheet exclude-result-prefixes="query cmd dncv" version="1.0" xmlns:cmd="http://www.novell.com/nxsl/java/com.novell.nds.dirxml.driver.XdsCommandProcessor" xmlns:dncv="http://www.novell.com/nxsl/java/com.novell.nds.dirxml.driver.DNConverter" xmlns:query="http://www.novell.com/nxsl/java/com.novell.nds.dirxml.driver.XdsQueryProcessor" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+				<!-- parameters passed in from the DirXML engine -->
+				<xsl:param name="srcQueryProcessor"/>
+				<xsl:param name="destQueryProcessor"/>
+				<xsl:param name="srcCommandProcessor"/>
+				<xsl:param name="destCommandProcessor"/>
+				<xsl:param name="dnConverter"/>
+				<xsl:param name="fromNds"/>
+				<!-- identity transformation template -->
+				<!-- in the absence of any other templates this will cause -->
+				<!-- the stylesheet to copy the input through unchanged to the output -->
+				<xsl:template match="node()|@*">
+					<xsl:copy>
+						<xsl:apply-templates select="@*|node()"/>
+					</xsl:copy>
+				</xsl:template>
+				<xsl:template match="/nds/input/modify[@class-name='DirXMLjnsuNetworkDevice']">
+					<xsl:variable name="query-doc">
+						<query scope="subtree">
+							<search-attr attr-name="DirXMLjnsuDHCPAddress">
+								<value type="string">
+									<xsl:value-of select="/nds/input/modify//modify-attr[@attr-name='DirXMLjnsuDHCPAddress']/add-value/value"/>
+								</value>
+							</search-attr>
+							<read-attr attr-name="DirXMLjnsuDHCPAddress"/>
+						</query>
+					</xsl:variable>
+					<xsl:variable name="result" select="query:query($destQueryProcessor,$query-doc)"/>
+					<xsl:variable name="DestDN" select="$result//instance/@src-dn"/>
+					<xsl:element name="modify">
+						<xsl:attribute name="class-name">DirXMLjnsuNetworkDevice</xsl:attribute>
+						<xsl:attribute name="dest-dn">
+							<xsl:value-of select="$DestDN"/>
+						</xsl:attribute>
+						<xsl:copy-of select="//modify-attr"/>
+					</xsl:element>
+				</xsl:template>
+			</xsl:stylesheet>
+		</stylesheet>
+		<entitlement-definition name="ScriptingAccount">
+			<entitlement conflict-resolution="union" description="User Account in Scripting Account" display-name="Scripting User Account">
+				<interpretive-variables>
+					<add-variable lossy="false" name="on-account-add"/>
+					<remove-variable lossy="true" name="on-account-remove"/>
+				</interpretive-variables>
+			</entitlement>
+		</entitlement-definition>
+	</children>
+	<global-config-values>
+		<configuration-values>
+			<definitions/>
+		</configuration-values>
+	</global-config-values>
+</driver-configuration>

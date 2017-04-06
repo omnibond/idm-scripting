@@ -1,0 +1,20 @@
+SCHEMA
+  CLASS User
+    # To do...
+    ATTRIBUTE "CN" NAMING REQUIRED
+    ATTRIBUTE "AccountDisabled" STATE
+    ATTRIBUTE "AccountExpirationDate" INTEGER
+    ATTRIBUTE "Description"
+    ATTRIBUTE "HomeDirectory"
+    ATTRIBUTE "IsAccountLocked" STATE
+    ATTRIBUTE "FullName"
+    ATTRIBUTE "MaxLogins" INTEGER
+    ATTRIBUTE "PasswordExpirationDate" INTEGER
+    ATTRIBUTE "PasswordMinimumLength" INTEGER
+    ATTRIBUTE "PasswordRequired" STATE
+
+  CLASS Group
+    ATTRIBUTE "CN" NAMING REQUIRED
+    ATTRIBUTE "Description"
+
+

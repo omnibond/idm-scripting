@@ -1,0 +1,9 @@
+SCHEMA
+
+  CLASS DirXMLjnsuNetworkDevice
+
+    ATTRIBUTE DirXMLjnsuDHCPAddress
+    ATTRIBUTE DirXMLjnsuDisabled 
+    ATTRIBUTE DirXMLjnsuDisabledTime 
+    ATTRIBUTE DirXMLjnsuInfected 
+    ATTRIBUTE DirXMLjnsuInfectedPorts 

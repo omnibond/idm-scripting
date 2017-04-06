@@ -1,0 +1,4 @@
+<?xml version="1.0" standalone="yes"?>
+<palette id="com.omnibond.junetsu" name="Junetsu" extends="com.novell.idm.main">
+    <group id="Junetsu">%Junetsu</group>
+</palette>

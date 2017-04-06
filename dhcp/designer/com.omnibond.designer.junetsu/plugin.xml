@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         id="com.omnibond.designer.junetsu.model_items"
+         point="com.novell.idm.modelitem">
+      <item
+            location="defs/model_items">
+      </item>
+   </extension>
+   <extension
+         point="com.novell.idm.modeler.modelerpage">
+      <modelerpage
+            class="com.omnibond.designer.junetsu.JuNetSuPage"
+            icon="icons/cluster.gif"
+            id="com.omnibond.designer.junetsu.modelerpage"
+            name="Junetsu">
+      </modelerpage>
+   </extension>
+   <!--
+   <extension
+         id="com.omnibond.designer.junetsu.JuNetSuViewExtension"
+         name="JuNetSu"
+         point="org.eclipse.ui.views">
+      <category
+            id="com.omnibond.designer.junetsu"
+            name="JuNetSu">
+      </category>
+      <view
+            category="com.omnibond.designer.junetsu"
+            class="com.omnibond.designer.junetsu.JuNetSuView"
+            id="com.omnibond.designer.junetsu.JuNetSuView"
+            name="JuNetSu"
+            restorable="true">
+      </view>
+   </extension>
+   -->
+</plugin>
