@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><driver-configuration dn="RegistrationDisableandDelete.Driverset.Services.YourOrganization" driver-set-dn="Driverset.Services.YourOrganization" name="RegistrationDisableandDelete">
+	<attributes>
+		<application-schema>
+			<schema-def/>
+		</application-schema>
+		<configuration-manifest>
+			<manifest name="null"/>
+		</configuration-manifest>
+		<global-config-values>
+			<configuration-values>
+				<definitions/>
+			</configuration-values>
+		</global-config-values>
+		<global-engine-values>
+			<configuration-values>
+				<definitions>
+					<definition display-name="Subscriber channel retry interval in seconds" display-name-ref="ecnm_rint" name="dirxml.engine.retry-interval" range-lo="1" type="integer">
+						<description description-ref="ecds_rint">The subscriber channel retry interval controls how frequently the DirXML Engine will retry the processing of a cached transaction after the application shim's Subscriber object returns a retry status.</description>
+						<value>30</value>
+					</definition>
+					<definition display-name="Qualified form for DN-syntax attribute values" display-name-ref="ecnm_dnvf" name="dirxml.engine.qualified-dn-values" type="boolean">
+						<description description-ref="ecds_dnvf">The qualified form for DN-syntax attribute values controls whether values for DN-syntax attribute values are presented in unqualified slash form or qualified slash form. A "true" setting means the values are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Qualified form for rename events" display-name-ref="ecnm_refm" name="dirxml.engine.qualified-rename-values" type="boolean">
+						<description description-ref="ecds_refm">The qualified form for rename events controls whether the new-name portion of rename events coming from the Identity Vault are presented to the Subscriber channel with type qualifier(s) (e.g. CN=). A "true" setting means the names are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Maximum eDirectory replication wait time in seconds" display-name-ref="ecnm_mrpw" name="dirxml.engine.max-replication-wait" range-lo="1" type="integer">
+						<description description-ref="ecds_mrpw">The maximum eDirectory replication wait time controls the maximum time that the DirXML Engine will wait for a particular change to replicate between the local replica and a remote replica. This only affects operations where the DirXML Engine is required to contact a remote eDirectory server in the same tree to perform an operation and may need to wait until some change has replicated to or from the remote server before the operation can be completed (e.g. object moves when the DirXML server does not hold the master replica of the moved object ;file system rights operations for Users created from a template.)</description>
+						<value>180</value>
+					</definition>
+					<definition display-name="Use non-compliant backwards-compatible mode for XSLT" display-name-ref="ecnm_xbcm" name="dirxml.engine.xslt-bc-mode" type="boolean">
+						<description description-ref="ecds_xbcm">This control sets the XSLT processor used by the DirXML Engine to a backwards-compatible mode. The backwards-compatible mode causes the XSLT processor to use one or more behaviors that are not XPath 1.0 and/or XSLT 1.0 standards-compliant. This is done in the interest of backwards-compatiblity with existing DirXML stylesheets that depend on the non-standard behavior(s). 
+ 
+ In particular: 
+ 
+ The behavior of the XPath "!=" operator when one operand is a node-set and the other operand is other than a node-set is incorrect in DirXML releases up to and including DirXML 2.0 (Novell Identity Manager 2.0). This behavior has been corrected; however, the corrected behavior is disabled by default through this control in favor of backwards-compatibility with existing DirXML stylesheets.</description>
+						<value>true</value>
+					</definition>
+					<definition display-name="Maximum application objects to migrate at once" display-name-ref="ecnm_mxappm" name="dirxml.engine.max-migrate-app-count" range-lo="1" type="integer">
+						<description description-ref="ecds_mxappm">This control is used to limit the number of application objects that the DirXML Engine will request from an application during a single query that is performed as part of a "migrate objects from application" operation. 
+ 
+ If "java.lang.OutOfMemoryError" errors are encountered during a migrate from application operation then this number should be set lower than the default. 
+ 
+ Note that this control does not limit the number of application objects that can be migrated; it merely limits the "batch size".</description>
+						<value>50</value>
+					</definition>
+					<definition display-name="Set creatorsName on objects created in Identity Vault" display-name-ref="ecnm_scrnm" name="dirxml.engine.set-creators-name" type="boolean">
+						<description description-ref="ecds_scrnm">This control is used by the DirXML Engine to determine if the creatorsName attribute should be set to the DN of this driver on all objects created in the Identity Vault by this driver.
+ 
+ Setting the creatorsName attribute allows for easily identifying objects created by this driver, but also carries a performance penalty. If not set, the creatorsName attribute will default to the DN of the NCP Server object that is hosting the driver.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Write pending associations" display-name-ref="ecnm_pass" name="dirxml.engine.use-pending-association" type="boolean">
+						<description description-ref="ecds_pass">This control determines whether the DirXML Engine will write a pending association on an object during subscriber channel processing.
+ 
+ Writing a pending association confers little or no benefit but does incur a performance penalty. Nevertheless, the option exists to turn it on for backward compatibility.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Use password event values" display-name-ref="ecnm_pevvl" name="dirxml.engine.use-password-event-values" type="boolean">
+						<description description-ref="ecds_pevvl">This control determines the source of the value reported for the nspmDistributionPassword attribute for subscriber channel add and modify events.
+ 
+ Setting the control to false means that the current value of nspmDistributionPassword is obtained and reported as the value of the attribute event. This means that only the current password value is available. This is the default behavior.
+ 
+ Setting the control to true means that the value recorded with the eDirectory event will be decrypted and reported as the value of the attribute event. This means that both the old password value (if it exists) and the replacement password value at the time of the event are available. This is useful for synchronizing passwords to certain applications that require the old password to enable setting a new password.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Enable password synchronization status reporting" display-name-ref="ecnm_pss" name="dirxml.engine.pwd-sync-status" type="boolean">
+						<description description-ref="ecds_pss">This control determines whether the DirXML Engine will report the status of subscriber channel password change events. 
+ 
+ Reporting the status of subscriber channel password change events allows applications such as the Identity Manager User Application to monitor the synchronization progress of a password change that should be synchronized to the connected application.</description>
+						<value>true</value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-engine-values>
+		<driver-filter-xml>
+			<filter>
+				<filter-class class-name="User" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="true" subscriber="sync">
+					<filter-attr attr-name="Login Disabled" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="notify"/>
+				</filter-class>
+				<filter-class class-name="DirXMLjnsuNetworkDevice" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="true" subscriber="sync">
+					<filter-attr attr-name="DirXMLjnsuUserDN" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDisabled" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuMDisabled" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuInfected" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+				</filter-class>
+			</filter>
+		</driver-filter-xml>
+		<driver-image><![CDATA[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]]></driver-image>
+		<java-module value="com.novell.nds.dirxml.driver.nulldriver.NullDriverShim"/>
+		<driver-start-option value="2"/>
+		<driver-cache-limit value="0"/>
+		<shim-config-info-xml>
+			<driver-config name="Null Driver">
+				<publisher-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Publisher heartbeat interval" name="pub-heartbeat-interval" type="integer">
+								<description>Configures the driver shim to send a periodic status message on the publisher channel when there has been no publisher traffic for the given number of seconds.</description>
+								<value>0</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</publisher-options>
+			</driver-config>
+		</shim-config-info-xml>
+		<driver-password-query/>
+		<shim-auth-password-query/>
+		<policy-linkage>
+			<linkage-item dn="MappingRule.RegistrationDisableandDelete.Driverset.Services.YourOrganization" order="0" policy-set="0" policy-set-name="Schema mapping"/>
+			<linkage-item dn="DeleteRegistrationsWithNoUserDN.Subscriber.RegistrationDisableandDelete.Driverset.Services.YourOrganization" order="0" policy-set="4" policy-set-name="Subscriber event transform"/>
+			<linkage-item dn="DisableRegistrations.Subscriber.RegistrationDisableandDelete.Driverset.Services.YourOrganization" order="1" policy-set="4" policy-set-name="Subscriber event transform"/>
+			<linkage-item dn="VetoAllEvents.Subscriber.RegistrationDisableandDelete.Driverset.Services.YourOrganization" order="2" policy-set="4" policy-set-name="Subscriber event transform"/>
+		</policy-linkage>
+	</attributes>
+	<children>
+		<publisher name="Publisher">
+			<attributes/>
+			<children/>
+		</publisher>
+		<subscriber name="Subscriber">
+			<attributes/>
+			<children>
+				<rule name="DeleteRegistrationsWithNoUserDN">
+					<policy>
+						<rule>
+							<description>Delete Network Device objects that don't have DirXMLUserDN set</description>
+							<conditions>
+								<and>
+									<if-class-name op="equal">DirXMLjnsuNetworkDevice</if-class-name>
+									<if-src-attr name="DirXMLjnsuUserDN" op="not-available"/>
+									<if-src-attr name="DirXMLjnsuGroupDN" op="not-available"/>
+									<if-src-attr name="DirXMLjnsuStaticAddr" op="not-equal">true</if-src-attr>
+									<if-src-attr name="DirXMLjnsuRegVersion" op="equal">1</if-src-attr>
+									<if-src-attr name="DirXMLjnsuNvrExpires" op="not-equal">true</if-src-attr>
+								</and>
+							</conditions>
+							<actions>
+								<do-delete-src-object/>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+				<rule name="DisableRegistrations">
+					<policy>
+						<rule>
+							<description>DisableRegistrations</description>
+							<conditions>
+								<and>
+									<if-class-name op="equal">user</if-class-name>
+									<if-op-attr name="Login Disabled" op="changing"/>
+									<if-src-attr name="DirXMLjnsuInfected" op="not-equal">true</if-src-attr>
+								</and>
+							</conditions>
+							<actions>
+								<do-for-each>
+									<arg-node-set>
+										<token-query class-name="DirXMLjnsuNetworkDevice" datastore="src">
+											<arg-match-attr name="DirXMLjnsuUserDN">
+												<arg-value>
+													<token-src-dn/>
+												</arg-value>
+											</arg-match-attr>
+										</token-query>
+									</arg-node-set>
+									<arg-actions>
+										<do-set-src-attr-value class-name="DirXMLjnsuNetworkDevice" name="DirXMLjnsuDisabled">
+											<arg-dn>
+												<token-xpath expression="$current-node/@src-dn"/>
+											</arg-dn>
+											<arg-value type="string">
+												<token-op-attr name="Login Disabled"/>
+											</arg-value>
+										</do-set-src-attr-value>
+									</arg-actions>
+								</do-for-each>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+				<rule name="VetoAllEvents">
+					<policy>
+						<rule>
+							<description>Veto all events</description>
+							<conditions/>
+							<actions>
+								<do-veto/>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+			</children>
+		</subscriber>
+		<rule name="MappingRule">
+			<attr-name-map/>
+		</rule>
+	</children>
+	<global-config-values>
+		<configuration-values>
+			<definitions/>
+		</configuration-values>
+	</global-config-values>
+</driver-configuration>
