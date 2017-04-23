@@ -92,7 +92,7 @@ Configuring Mailbox Placement
 
 The Exchange scripts can be configured to create mailboxes in a specific mailbox database, or to randomize placement for load balancing. The placement is controlled by three driver parameters in the driver's Subscriber Settings. These parameters are described below.
 
-Mailbox Placement Mode	Mailbox Placement Scope	Mailbox Placement Identifier	Notes
+Mailbox Placement Mode |	Mailbox Placement Scope	| Mailbox Placement Identifier |	Notes
 Default	Not used	Not used	Place the mailbox in the default mailbox database, usually 'Mailbox Database' on the local server.
 Specific	Not used	Path to desired mailbox database, e.g. MYSERVER\My Database	Place the mailbox in the specified mailbox database.
 Random	Site, Server or Storage Group	Path to container of type specified by scope, or blank if 'Site' was specified.	Randomly places mailbox in one of the databases in the site, specified server or storage group.
