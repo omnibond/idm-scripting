@@ -1,4 +1,4 @@
-# Exchange Plug-In
+# Exchange Scripting Driver Plug-In
 **Summary**
 
 Microsoft Exchange includes the Exchange Management Shell, a command and scripting shell based on Windows PowerShell.
