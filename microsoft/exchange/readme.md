@@ -1,16 +1,15 @@
 # Exchange Scripting Driver Plug-In
-***Summary***
+### Summary
 
 Microsoft Exchange includes the Exchange Management Shell, a command and scripting shell based on Windows PowerShell.
 
 Novell Identity Manager, with the Identity Manager Active Directory Driver, allows synchronization of identities to and from Microsoft Active Directory and Exchange. The Identity Manager Scripting Driver can be deployed with this project's scripts to allow custom functionality to be implemented for Exchange.
 
-***Features***
+### Features
 
 The 'starter' scripts included create mailboxes and distribution groups in Exchange when users and groups are created in Novell eDirectory™. The scripts implement several options for mailbox placement. Mailboxes can be created in a specific mailbox database, a randomly assigned database, or a database indicated by an attribute.
 
-
-***What you Need***
+### What you Need
 
 Evaluation downloads are available for the Novell products below.
 
@@ -19,7 +18,7 @@ Evaluation downloads are available for the Novell products below.
 - Scripting Driver Documentation: https://www.netiq.com/documentation/idm45drivers/bi_impl_scripting/data/bi_impl_scripting.html
 - Exchange Management Shell running on a Windows system in one of the Exchange organization's domains.
 
-***Installation***
+### Installation
 
 See the relevant product documentation for help installing eDirectory, iManager, Identity Manager and Scripting Driver.
 
@@ -76,7 +75,7 @@ If the AD Driver is already installed:
 
 Import the file Rules\Scripting-ExShell-IDM3_6_0-V5.xml from your installation directory. See the Scripting Driver documenation for more details.
 
-***Configuring the Exchange Scripts***
+### Configuring the Exchange Scripts
 
 **Post-configuration Tasks**
 
@@ -107,9 +106,9 @@ The randomization does not take into account the number of mailboxes already in 
 
 Paths can be a GUID, or can be of the form [Server Name][\][Storage Group Name][\][Mailbox Database Name], depending on what type of container is specified.
 
-***Using the Script Service (IDM 4 or later)***
+### Using the Script Service (IDM 4 or later)
 
 If you wish to use the Script Service (see Scripting Driver documentation), make sure you have the latest release, then follow these additional steps:
 
-Change services (Driver and Script Service) to log in as an Exchange administrator. They must log in as the same user.
-Create WSDriver\conf\scriptservice.conf and this line: -command Add-PSSnapin Microsoft.Exchange.Management.PowerShell.Admin
+- Change services (Driver and Script Service) to log in as an Exchange administrator. They must log in as the same user.
+- Create WSDriver\conf\scriptservice.conf and this line: -command Add-PSSnapin Microsoft.Exchange.Management.PowerShell.Admin
