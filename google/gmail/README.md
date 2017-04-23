@@ -1,15 +1,13 @@
+## Google G-Suite Scripting Plug-In
+
 These scripts require the latest version of Python 2
+Required Python Modules:
+To verify the module versions look in the python site-packages directories or
+run: pip list
 
-
-Required Python Modules
------------------------
-
-# To verify the module versions look in the python site-packages directories or
-# run: pip list
-#
-# NOTE: Installing the google API client may install a different and/or duplicate
-#       version of pyOpenSSL and possible other modules which could cause problems.
-#       See the "Possible Installation Issues" section below.
+NOTE: Installing the google API client may install a different and/or duplicate
+       version of pyOpenSSL and possible other modules which could cause problems.
+       See the "Possible Installation Issues" section below.
         
 
 cffi (0.8.6)
@@ -26,15 +24,15 @@ MIMEText from email.mime.text
 Install Google API Python Client
 --------------------------------
 
-https://google-api-python-client.googlecode.com/files/google-api-python-client-1.2.zip
+https://github.com/google/google-api-python-client
 
-# Requires the latest version of Python 2
+Requires the latest version of Python 2
 [zypper|yum|apt-get] install python python-pip
 
-# If pip for python is available...
+If pip for python is available...
 pip install --upgrade google-api-python-client
 
-# If pip for python is not available...
+If pip for python is not available...
 wget https://bootstrap.pypa.io/ez_setup.py -O - | python
 easy_install --upgrade google-api-python-client
 
