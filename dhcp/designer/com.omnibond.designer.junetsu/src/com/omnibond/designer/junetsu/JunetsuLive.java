@@ -400,10 +400,10 @@ public class JunetsuLive {
          DesignElement newElement = factory.createDesignElement();
          newElement.setParent(element);
          newElement.setType(JuNetSu.JUNETSU_DATA);
-         newElement.setAttribute(JuNetSu.JUNETSU_NAME, "Clemson 130.127.5.x");
-         newElement.setAttribute(JuNetSu.JUNETSU_FIRST_ADDRESS, "130.127.5.0");
-         newElement.setAttribute(JuNetSu.JUNETSU_LAST_ADDRESS, "130.127.5.255");
-         newElement.setAttribute(JuNetSu.JUNETSU_CIDR, "130.127.5.0/24");
+         newElement.setAttribute(JuNetSu.JUNETSU_NAME, "main 10.1.5.x");
+         newElement.setAttribute(JuNetSu.JUNETSU_FIRST_ADDRESS, "10.1.5.0");
+         newElement.setAttribute(JuNetSu.JUNETSU_LAST_ADDRESS, "10.1.5.255");
+         newElement.setAttribute(JuNetSu.JUNETSU_CIDR, "10.1.5.0/24");
          
          element.internalSetEnableNotifications(false);
          element.getDesignElements().add(newElement);

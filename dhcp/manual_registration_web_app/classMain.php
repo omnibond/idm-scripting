@@ -7,7 +7,7 @@ session_start();
   /** 
    * Application Framework
    *
-   * @author Barry Johnson <cyclist@clemson.edu>
+   * @author Barry Johnson
    * @version 1.0
    * @access public
    * @copyright cyclist

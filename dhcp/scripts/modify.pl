@@ -152,7 +152,7 @@ if ( $ddns_prefix ne '') {
 
 if ($description =~/^T1Fixed/) {
    #$statements .= "\noption host-name \"$ddns_prefix\";";
-   #$statements .= "\nnext-server 130.127.10.110;";
+   #$statements .= "\nnext-server 10.1.10.110;";
 }
 
 

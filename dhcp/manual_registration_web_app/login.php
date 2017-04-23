@@ -30,7 +30,7 @@ $this->navFormStart();
 
 print $this->userMessage();
 ?>
-Please enter your Clemson USERID and PASSWORD:<p>
+Please enter your USERID and PASSWORD:<p>
 <table border="0" cellpadding="3" cellspacing="0">
 <tr><td align="center">
 <pre>

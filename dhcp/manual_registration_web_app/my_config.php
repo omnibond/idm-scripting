@@ -17,10 +17,10 @@ $this->set('DEV_USER','SOMEUSER');
 $this->set('application_title','Network Registration System');
 
 // Author signature (will be included in the Meta HTML)
-$this->set('application_author','Billy Cook (wrcook@clemson.edu)');
+$this->set('application_author','Billy Cook');
 
 // Org name (will be included in the Meta HTML)
-$this->set('orgname','Clemson University');
+$this->set('orgname','Org');
 
 // This is the file that contains all the Javascript code your app will need.
 $this->set('common_javascript','common_javascript.php');

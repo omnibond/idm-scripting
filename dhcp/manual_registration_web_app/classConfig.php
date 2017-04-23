@@ -3,7 +3,7 @@
   /** 
    * classConfig
    *
-   * @author Barry Johnson <cyclist@clemson.edu>
+   * @author Barry Johnson
    * @version 1.0
    * @access public
    * @copyright cyclist
