@@ -1,16 +1,16 @@
 # Exchange Plug-In
-**Summary
+**Summary**
 
 Microsoft Exchange includes the Exchange Management Shell, a command and scripting shell based on Windows PowerShell.
 
 Novell Identity Manager, with the Identity Manager Active Directory Driver, allows synchronization of identities to and from Microsoft Active Directory and Exchange. The Identity Manager Scripting Driver can be deployed with this project's scripts to allow custom functionality to be implemented for Exchange.
 
-**Features
+**Features**
 
 The 'starter' scripts included create mailboxes and distribution groups in Exchange when users and groups are created in Novell eDirectory™. The scripts implement several options for mailbox placement. Mailboxes can be created in a specific mailbox database, a randomly assigned database, or a database indicated by an attribute.
 
 
-**What you Need
+**What you Need**
 
 Evaluation downloads are available for the Novell products below.
 
@@ -19,12 +19,12 @@ Identity Manager Integration Module for Scripting 3.6 or higher, with the latest
 Scripting Driver Documentation
 Exchange Management Shell running on a Windows system in one of the Exchange organization's domains.
 
-**Installation
+**Installation**
 
 See the relevant product documentation for help installing eDirectory, iManager, Identity Manager and Scripting Driver.
 
 
-**Where to Install
+**Where to Install**
 
 The Scripting Driver consists of two components: the Driver Object which runs on a eDirectory/Identity Manager server, and the Driver Shim which runs as a Windows service. The Windows system you use has the following prerequisites:
 
@@ -33,7 +33,7 @@ Exchange Management Shell installed (included with Exchange Management Tools).
 If you are running the x86 Exchange Management Shell, install the x86 Scripting Driver. Otherwise, use the x64 Scripting Driver.
 Installing the AD Driver
 
-When installing the AD Driver, use these settings:
+**When installing the AD Driver, use these settings:**
 
 Configure Data Flow: Set to Bidirectional. If you don't intend to synchronize AD accounts to eDir, set the attributes to Ignore on the Publisher channel in the Driver Filter.
 If you intend to allow the Exchange starter scripts to create mailboxes, set the method for managing Exchange mailboxes to None.
@@ -42,7 +42,7 @@ If the AD Driver is already installed:
 In the Driver Filter, set the User and Group classes to Synchronize on the Publisher channel. The attributes can still be set to Ignore if you aren't synchronizing from AD.
 If you intend to allow the Exchange starter scripts to create mailboxes, set Use CDOEXM for Exchange to No.
 
-**Installing the Scripting Driver Shim
+**Installing the Scripting Driver Shim**
 
 Install the Windows Scripting Driver, but do not import the default driver configuration. You will use a custom driver configuration from the script package.
 Change the Novell IDM Windows Script Driver service to log on as an Exchange administrator rather than LocalSystem. Restart the service.
@@ -50,7 +50,7 @@ If you have modified the PowerShell scripts that come with the Scripting Driver,
 Unzip Scripting-ExShell-20090923.zip to your Scripting Driver directory (usually C:\Program Files\Novell\WSDriver).
 Pre-import Tasks
 
-**Extend the eDirectory schema
+**Extend the eDirectory schema**
 
 Use the Extend Schema task in iManager to add the schema file Schema\exshell.sch from the installation directory.
 Log out/log in to iManager to refresh your view of the schema.
@@ -73,7 +73,7 @@ Importing the Driver Configuration
 
 Import the file Rules\Scripting-ExShell-IDM3_6_0-V5.xml from your installation directory. See the Scripting Driver documenation for more details.
 
-Configuring the Exchange Scripts
+**Configuring the Exchange Scripts**
 
 Post-configuration Tasks
 
@@ -101,7 +101,7 @@ The randomization does not take into account the number of mailboxes already in 
 
 Paths can be a GUID, or can be of the form [Server Name][\][Storage Group Name][\][Mailbox Database Name], depending on what type of container is specified.
 
-Using the Script Service (IDM 4 or later)
+**Using the Script Service (IDM 4 or later)**
 
 If you wish to use the Script Service (see Scripting Driver documentation), make sure you have the latest release, then follow these additional steps:
 
