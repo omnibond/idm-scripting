@@ -12,7 +12,7 @@ The Novell Identity Manager Scripting Driver allows you to write custom scripts 
 - Ability to migrate existing users.
 - May be extended to support users and groups on multiple Windows systems.
 - Fully customizable VBScript scripts that can be used immediately or extended.
-- Support for Windows 2000, Windows XP, Windows 2003, Windows Vista and Windows 2008.
+- Support for Windows 2000, Windows XP, Windows 2003, Windows Vista, Windows 2008, Windows 2012.
 
 ### What you Need
 
