@@ -1,3 +1,5 @@
+# Windows Domain and Local Accounts Scripting Driver Plug-In
+
 ### Summary
 
 The Novell Identity Manager Scripting Driver allows you to write custom scripts in order to synchronize identity management information from Novell eDirectory™ to an external identity management system. This project contains Microsoft VBScript scripts that allow synchronization from your identity vault (eDirectory) to Windows NT domains or Windows local accounts. Use the scripts right 'out of the box' or customize them further to meet your needs.
