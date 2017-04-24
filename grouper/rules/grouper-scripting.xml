@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?><driver-configuration dn="Grouper Scripting.jeff64DriverSet.utility.jefftest" driver-set-dn="jeff64DriverSet.utility.jefftest" name="Grouper Scripting" package-id="NHS8CEMH_201210301551300663">
+	<packages>
+		<package id="NHS8CEMH_201210301551300663" symbolic-name="com.netiqcorporation.novlscrbase" version="1.0.1.20151027145037"/>
+	</packages>
+	<attributes package-id="NHS8CEMH_201210301551300663" package-version="1.0.1.20151027145037">
+		<configuration-manifest>
+			<manifest name="SCRIPTING">
+				<capability name="password-subscribe"/>
+				<capability name="password-publish"/>
+				<capability name="password-check"/>
+				<health-config>
+					<green>
+						<and>
+							<and>
+								<driver-state state="running"/>
+								<in-cache-overflow state="false"/>
+								<unprocessed-size op="lt" value="2000000"/>
+							</and>
+							<or>
+								<transactions op="gt" over-last="2" source="publisher-reported-events" value="0"/>
+								<sample-history minutes="2" op="lt"/>
+							</or>
+						</and>
+						<actions>
+							<generate-event id="1230" level="log-info">
+								<event-arguments>
+									<event-argument name="value" value="0"/>
+									<event-argument name="value3" value="1"/>
+								</event-arguments>
+							</generate-event>
+						</actions>
+					</green>
+					<yellow>
+						<and>
+							<and>
+								<driver-state state="running"/>
+								<unprocessed-size op="lt" value="5000000"/>
+							</and>
+							<or>
+								<transactions op="gt" over-last="20" source="publisher-reported-events" value="0"/>
+								<sample-history minutes="20" op="lt"/>
+							</or>
+						</and>
+						<actions>
+							<generate-event id="1230" level="log-info">
+								<event-arguments>
+									<event-argument name="value" value="1"/>
+									<event-argument name="value3" value="1"/>
+								</event-arguments>
+							</generate-event>
+						</actions>
+					</yellow>
+					<red>
+						<actions>
+							<generate-event id="1230" level="log-info">
+								<event-arguments>
+									<event-argument name="value" value="3"/>
+									<event-argument name="value3" value="1"/>
+								</event-arguments>
+							</generate-event>
+						</actions>
+					</red>
+				</health-config>
+			</manifest>
+		</configuration-manifest>
+		<driver-filter-xml>
+			<filter>
+				<filter-class class-name="Organization" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="true" subscriber="sync">
+					<filter-attr attr-name="Description" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+				</filter-class>
+				<filter-class class-name="Organizational Unit" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="true" subscriber="sync">
+					<filter-attr attr-name="Description" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+				</filter-class>
+				<filter-class class-name="Group" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="true" subscriber="sync">
+					<filter-attr attr-name="Description" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="Member" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+				</filter-class>
+			</filter>
+		</driver-filter-xml>
+		<driver-image>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</driver-image>
+		<log-events inherit="true"/>
+		<trace-file value="/tmp/grouper.log"/>
+		<trace-size-limit value="100000"/>
+		<trace-level value="10"/>
+		<driver-trace-level inherit="true"/>
+		<log-limit inherit="true"/>
+		<java-module value="com.novell.nds.dirxml.remote.driver.DriverShimImpl"/>
+		<policy-linkage>
+			<linkage-item dn="Veto Objects not in Scope.Subscriber.Grouper Scripting.jeff64DriverSet.utility.jefftest" order="0" policy-set="4" policy-set-name="Subscriber Event"/>
+			<linkage-item dn="Match Groups and Folders.Subscriber.Grouper Scripting.jeff64DriverSet.utility.jefftest" order="0" policy-set="6" policy-set-name="Subscriber Matching"/>
+			<linkage-item dn="Include Full Description.Subscriber.Grouper Scripting.jeff64DriverSet.utility.jefftest" order="0" policy-set="10" policy-set-name="Subscriber Command"/>
+		</policy-linkage>
+		<driver-cache-limit value="0"/>
+		<shim-auth-password-query/>
+		<shim-auth-server value="REMOTE(hostname=localhost port=8090 kmo='SSL CertificateDNS' )"/>
+		<driver-password-query/>
+		<driver-start-option no-resync="true" value="2"/>
+		<shim-config-info-xml>
+			<driver-config name="Scripting Driver">
+				<driver-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Automatic Loopback Detection:" name="auto-loopback-detection" type="enum">
+								<description>Choose 'Yes' if you wish to enable automatic loopback detection or 'No' to disable automatic loopback detection</description>
+								<value>true</value>
+								<enum-choice display-name="Yes">true</enum-choice>
+								<enum-choice display-name="No">false</enum-choice>
+							</definition>
+							<definition display-name="Script Timeout:" name="script-timeout" type="string">
+								<description>Enter the maximum time in seconds that a script should execute before exiting. (Specify 0 for no timeout.)</description>
+								<value>120</value>
+							</definition>
+							<definition display-name="Use Windows EFS:" name="use-windows-efs" type="enum">
+								<description>Choose whether Windows Encrypting File System (EFS) should be used to protect data on disk.</description>
+								<value>true</value>
+								<enum-choice display-name="Yes">true</enum-choice>
+								<enum-choice display-name="No">false</enum-choice>
+							</definition>
+							<definition display-name="Script Trace File:" name="script-trace-file" type="string">
+								<description>Enter the path and file name for the script trace file.</description>
+								<description>Enter the path and file name for the script trace file.</description>
+								<value>logs\script-trace.log</value>
+							</definition>
+							<definition display-name="Script Command:" name="script-command" type="enum">
+								<description>Enter the command line that the driver will use to execute scripts.</description>
+								<description>Enter the command line that the driver will use to execute scripts.</description>
+								<enum-choice display-name="PowerShell2">powershell -ExecutionPolicy Unrestricted</enum-choice>
+								<enum-choice display-name="PowerShell">powershell</enum-choice>
+								<enum-choice display-name="VB">cscript //nologo</enum-choice>
+								<value>powershell -ExecutionPolicy Unrestricted</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</driver-options>
+				<subscriber-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Subscriber Script:" name="subscriber-script" type="string">
+								<description>The file to execute for Subscriber events.</description>
+								<value>subscriber.pl</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</subscriber-options>
+				<publisher-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Polling Script:" name="polling-script" type="string">
+								<description>The Polling file to execute for Publisher events.</description>
+								<value>poll.pl</value>
+							</definition>
+							<definition display-name="Heartbeat Script:" name="heartbeat-script" type="string">
+								<description>The Polling file to execute for Heartbeat.</description>
+								<value>heartbeat.pl</value>
+							</definition>
+							<definition display-name="Polling Interval (Seconds):" name="pub-polling-interval" type="string">
+								<description>Specify a number for the Publisher polling interval, measured in seconds. [For example: '60']</description>
+								<value>60</value>
+							</definition>
+							<definition display-name="Heartbeat Interval:" name="pub-heartbeat-interval" type="string">
+								<description>The Publisher Heartbeat Interval.</description>
+								<value>0</value>
+							</definition>
+							<definition display-name="Publisher Disabled" name="pub-disabled" type="enum">
+								<description>Choose 'Yes' to Disable the Publisher and not allow events to flow from the Scripting driver shim to the Identity Vault.  Choose 'No' to Enable the Publisher and allow events to flow from the Scripting driver shim to the Identity Vault.</description>
+								<value>true</value>
+								<enum-choice display-name="Yes">true</enum-choice>
+								<enum-choice display-name="No">false</enum-choice>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</publisher-options>
+			</driver-config>
+		</shim-config-info-xml>
+		<global-engine-values>
+			<configuration-values>
+				<definitions>
+					<definition display-name="Subscriber channel retry interval in seconds" display-name-ref="ecnm_rint" name="dirxml.engine.retry-interval" range-lo="1" type="integer">
+						<description description-ref="ecds_rint">The subscriber channel retry interval controls how frequently the DirXML Engine will retry the processing of a cached transaction after the application shim's Subscriber object returns a retry status.</description>
+						<value>30</value>
+					</definition>
+					<definition display-name="Qualified form for DN-syntax attribute values" display-name-ref="ecnm_dnvf" name="dirxml.engine.qualified-dn-values" type="boolean">
+						<description description-ref="ecds_dnvf">The qualified form for DN-syntax attribute values controls whether values for DN-syntax attribute values are presented in unqualified slash form or qualified slash form. A "true" setting means the values are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Qualified form for rename events" display-name-ref="ecnm_refm" name="dirxml.engine.qualified-rename-values" type="boolean">
+						<description description-ref="ecds_refm">The qualified form for rename events controls whether the new-name portion of rename events coming from the Identity Vault are presented to the Subscriber channel with type qualifier(s) (e.g. CN=). A "true" setting means the names are presented in qualified form.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Maximum eDirectory replication wait time in seconds" display-name-ref="ecnm_mrpw" name="dirxml.engine.max-replication-wait" range-lo="1" type="integer">
+						<description description-ref="ecds_mrpw">The maximum eDirectory replication wait time controls the maximum time that the DirXML Engine will wait for a particular change to replicate between the local replica and a remote replica. This only affects operations where the DirXML Engine is required to contact a remote eDirectory server in the same tree to perform an operation and may need to wait until some change has replicated to or from the remote server before the operation can be completed (e.g. object moves when the DirXML server does not hold the master replica of the moved object ;file system rights operations for Users created from a template.)</description>
+						<value>180</value>
+					</definition>
+					<definition display-name="Use non-compliant backwards-compatible mode for XSLT" display-name-ref="ecnm_xbcm" name="dirxml.engine.xslt-bc-mode" type="boolean">
+						<description description-ref="ecds_xbcm">This control sets the XSLT processor used by the DirXML Engine to a backwards-compatible mode. The backwards-compatible mode causes the XSLT processor to use one or more behaviors that are not XPath 1.0 and/or XSLT 1.0 standards-compliant. This is done in the interest of backwards-compatiblity with existing DirXML stylesheets that depend on the non-standard behavior(s). 
+ 
+ In particular: 
+ 
+ The behavior of the XPath "!=" operator when one operand is a node-set and the other operand is other than a node-set is incorrect in DirXML releases up to and including DirXML 2.0 (Novell Identity Manager 2.0). This behavior has been corrected; however, the corrected behavior is disabled by default through this control in favor of backwards-compatibility with existing DirXML stylesheets.</description>
+						<value>true</value>
+					</definition>
+					<definition display-name="Maximum application objects to migrate at once" display-name-ref="ecnm_mxappm" name="dirxml.engine.max-migrate-app-count" range-lo="1" type="integer">
+						<description description-ref="ecds_mxappm">This control is used to limit the number of application objects that the DirXML Engine will request from an application during a single query that is performed as part of a "migrate objects from application" operation. 
+ 
+ If "java.lang.OutOfMemoryError" errors are encountered during a migrate from application operation then this number should be set lower than the default. 
+ 
+ Note that this control does not limit the number of application objects that can be migrated; it merely limits the "batch size".</description>
+						<value>50</value>
+					</definition>
+					<definition display-name="Set creatorsName on objects created in Identity Vault" display-name-ref="ecnm_scrnm" name="dirxml.engine.set-creators-name" type="boolean">
+						<description description-ref="ecds_scrnm">This control is used by the DirXML Engine to determine if the creatorsName attribute should be set to the DN of this driver on all objects created in the Identity Vault by this driver.
+ 
+ Setting the creatorsName attribute allows for easily identifying objects created by this driver, but also carries a performance penalty. If not set, the creatorsName attribute will default to the DN of the NCP Server object that is hosting the driver.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Write pending associations" display-name-ref="ecnm_pass" name="dirxml.engine.use-pending-association" type="boolean">
+						<description description-ref="ecds_pass">This control determines whether the DirXML Engine will write a pending association on an object during subscriber channel processing.
+ 
+ Writing a pending association confers little or no benefit but does incur a performance penalty. Nevertheless, the option exists to turn it on for backward compatibility.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Use password event values" display-name-ref="ecnm_pevvl" name="dirxml.engine.use-password-event-values" type="boolean">
+						<description description-ref="ecds_pevvl">This control determines the source of the value reported for the nspmDistributionPassword attribute for subscriber channel add and modify events.
+ 
+ Setting the control to false means that the current value of nspmDistributionPassword is obtained and reported as the value of the attribute event. This means that only the current password value is available. This is the default behavior.
+ 
+ Setting the control to true means that the value recorded with the eDirectory event will be decrypted and reported as the value of the attribute event. This means that both the old password value (if it exists) and the replacement password value at the time of the event are available. This is useful for synchronizing passwords to certain applications that require the old password to enable setting a new password.</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Enable password synchronization status reporting" display-name-ref="ecnm_pss" name="dirxml.engine.pwd-sync-status" type="boolean">
+						<description description-ref="ecds_pss">This control determines whether the DirXML Engine will report the status of subscriber channel password change events. 
+ 
+ Reporting the status of subscriber channel password change events allows applications such as the Identity Manager User Application to monitor the synchronization progress of a password change that should be synchronized to the connected application.</description>
+						<value>true</value>
+					</definition>
+					<definition display-name="Combine values from template object with those from add operation" display-name-ref="ecnm_ctv" name="dirxml.engine.combine-template-values" type="boolean">
+						<description description-ref="ecds_ctv">This control determines how the DirXML Engine will use values from a template object when the template is used to create objects in the Identity Vault. Setting the control to true causes multi-valued attribute values from the template to be used in addition to those values for the same attribute that are  specified in the add operation. Setting the control to false causes the value(s) from the template to be ignored if there are values for the same attribute specified in the add operation.</description>
+						<value>true</value>
+					</definition>
+					<definition display-name="Allow event loopback from publisher to subscriber channel" display-name-ref="ecnm_ael" name="dirxml.engine.allow-event-loopback" type="boolean">
+						<description description-ref="ecds_ael">This control determines whether the DirXML Engine will allow an event to loopback from the publisher channel of a driver to the subscriber channel of the same driver. Setting the control to false means that the loopback of the event from the publisher to the subscriber channel will not be allowed. Setting the control to true means that events would flow from the publisher channel to the subscriber channel of the same driver.  </description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Revert to calculated membership value behavior" display-name-ref="ecnm_cavl" name="dirxml.engine.use-calculated-values" type="boolean">
+						<description description-ref="ecds_cavl">Prior to Identity Manager 3.6 the DirXML Engine retrieved "calculated" values for the attributes "Member" and "Group Membership". The Engine now retrieves static values. This behavior is more generally useful and makes synchronizing Nested Groups possible. Setting this control to true reverts to the pre-3.6 behavior. 
+ 
+ It is possible even with the post-3.6 default behavior to read the calculated values for "Member" and "Group Membership" by using the special attribute names "[pseudo].Member" and "[pseudo].Group Membership".</description>
+						<value>false</value>
+					</definition>
+					<definition display-name="Maximum time to wait for driver shutdown  in seconds" display-name-ref="ecnm_mdst" name="dirxml.engine.max-driver-shutdown-timeout" range-hi="3600" range-lo="5" type="integer">
+						<description description-ref="ecds_mdst">This control determines the maximum time in seconds for which the DirXML Engine will wait for the drivers publisher channel to shutdown. If the driver does not shutdown within the provided time value, then the driver will be terminated by the DirXML Engine.</description>
+						<value>60</value>
+					</definition>
+					<definition display-name="Regular Expression escape meta-characters" display-name-ref="ecnm_reecn" name="dirxml.engine.reg-ex-escape-chars" type="string">
+						<description description-ref="ecds_reecd">This control determines the meta-characters that will be escaped while evaluating regular expressions. If a meta-char is not present in control value then it will not be escaped during local variable expansion containing a regular expression. 
+ 
+ To escape all the regular expression meta-characters, "\,$,^,.,?,*,+,[,],(,),|" should be added as the value. 
+ 
+ If a meta-character need not be escaped, then remove it from the control value. 
+ 
+ The control value should be a valid comma(,) separated list, else errors may be encountered during policy evaluation.</description>
+						<value xml:space="preserve">$</value>
+					</definition>
+					<definition display-name="Retry of Out of Band events" display-name-ref="ecnm_robe" name="dirxml.engine.retry-outofband-event" type="boolean">
+						<description description-ref="ecds_robe">This control determines whether the DirXML Engine will retry an out of band event when the status is a RETRY. Setting the control to false means that the Engine will not retry the Out of Band event on a RETRY status. Setting the control to true means that the Engine will retry the Out of band event on a RETRY status.</description>
+						<value>false</value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-engine-values>
+		<global-config-values>
+			<configuration-values>
+				<definitions>
+					<definition display-name="GrouperWS Base URL" name="grouperWSUrl" type="string">
+						<description>The base URL for Grouper Webservice calls.  Example: https://myhost:8080/grouper-ws/servicesRest/json/v2_3_000</description>
+						<value>http://localhost:8080/grouper-ws/servicesRest/json/v2_3_000</value>
+					</definition>
+					<definition display-name="Grouper Username" name="grouperUsername" type="string">
+						<description>The username used to authenticate to the Grouper Webservice</description>
+						<value>GrouperSystem</value>
+					</definition>
+					<definition critical-change="true" display-name="Base DN" dn-space="dirxml" dn-type="slash" name="basedn" type="dn">
+						<description>The base DN for provisioning groups and organizational structure.</description>
+						<value>jefftest</value>
+					</definition>
+					<definition critical-change="true" display-name="Provision Flat Structure" name="provisionFlat" type="boolean">
+						<description>If true, all groups will be provisioned into the Grouper base folder.  If false, groups will be mirrored into a structure starting at the base DN.  The structure will be placed under the Grouper base folder.</description>
+						<value>false</value>
+					</definition>
+					<definition critical-change="true" display-name="Grouper Base Folder Path" name="grouperBaseFolderPath" type="string">
+						<description>The folder under where groups and organizaitonal structure will be placed in Grouper.  Example:  company:org:dept</description>
+						<value>test:folder</value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-config-values>
+		<named-password-query display-name="Grouper Password" name="grouperPassword"/>
+		<application-schema/>
+		<pkg-initial-states/>
+	</attributes>
+	<children>
+		<publisher name="Publisher">
+			<attributes/>
+			<children/>
+		</publisher>
+		<subscriber name="Subscriber">
+			<attributes/>
+			<children>
+				<rule name="Veto Objects not in Scope">
+					<policy>
+						<rule>
+							<description>Veto Objects Oustide Base DN</description>
+							<conditions>
+								<or>
+									<if-src-dn op="not-in-subtree">~basedn~</if-src-dn>
+									<if-src-dn op="equal">~basedn~</if-src-dn>
+								</or>
+							</conditions>
+							<actions>
+								<do-veto/>
+							</actions>
+						</rule>
+						<rule>
+							<description>Veto Containers if Flat Provisioning</description>
+							<comment xml:space="preserve">If we are provisioning groups all into the same folder in Grouper, then don't provision containers.</comment>
+							<conditions>
+								<or>
+									<if-global-variable mode="nocase" name="provisionFlat" op="equal">true</if-global-variable>
+								</or>
+								<or>
+									<if-class-name mode="nocase" op="equal">Organization</if-class-name>
+									<if-class-name mode="nocase" op="equal">Organizational Unit</if-class-name>
+								</or>
+							</conditions>
+							<actions>
+								<do-veto/>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+				<rule name="Include Full Description">
+					<policy>
+						<rule>
+							<description>Add Description</description>
+							<comment xml:space="preserve">Grouper only handles a single description value, so we need to send all values on every change.</comment>
+							<conditions>
+								<and>
+									<if-op-attr name="description" op="changing"/>
+								</and>
+							</conditions>
+							<actions>
+								<do-strip-op-attr name="Description"/>
+								<do-set-local-variable name="description" scope="policy">
+									<arg-node-set>
+										<token-src-attr name="Description"/>
+									</arg-node-set>
+								</do-set-local-variable>
+								<do-for-each>
+									<arg-node-set>
+										<token-local-variable name="description"/>
+									</arg-node-set>
+									<arg-actions>
+										<do-add-dest-attr-value name="Description">
+											<arg-value type="string">
+												<token-local-variable name="current-node"/>
+											</arg-value>
+										</do-add-dest-attr-value>
+									</arg-actions>
+								</do-for-each>
+								<do-add-dest-attr-value name="Description">
+									<arg-value type="string"/>
+								</do-add-dest-attr-value>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+				<rule name="Match Groups and Folders">
+					<policy>
+						<rule>
+							<description>Match on Existing Groups and Folders</description>
+							<conditions>
+								<and/>
+							</conditions>
+							<actions>
+								<do-find-matching-object scope="entry">
+									<arg-dn>
+										<token-src-dn/>
+									</arg-dn>
+								</do-find-matching-object>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+			</children>
+		</subscriber>
+	</children>
+	<global-config-values>
+		<configuration-values>
+			<definitions>
+				<header display-name="Operational Settings"/>
+				<definition display-name="User Container" dn-space="dirxml" dn-type="slash" name="idv.dit.data.users" type="dn">
+					<description>This GCV is used to get a reference to the container where users are stored. This value is used for all drivers. If you want separate containers for each driver, use the GCV on the Driver Object.
+The DN is expected in slash-format.</description>
+					<?generatePrompt?>
+					<value>Test Out of Band</value>
+				</definition>
+				<definition display-name="Group Container" dn-space="dirxml" dn-type="slash" name="idv.dit.data.groups" type="dn">
+					<description>This GCV is used to get a reference to the container where groups are stored. This value is used for all drivers. If you want separate containers for each driver, use the GCV on the Driver Object.
+The DN is expected in slash-format.</description>
+					<?generatePrompt?>
+					<value>Test Out of Band</value>
+				</definition>
+			</definitions>
+		</configuration-values>
+	</global-config-values>
+</driver-configuration>

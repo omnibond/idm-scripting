@@ -25,3 +25,6 @@ Respective addins are in the following directory structure:
 
 **Honeyd/**
 - Enables Identity device integration with Honeyd to detect devices with bots or worms and can be used with the DHCP scripts to remove a device from the network at the next DHCP lease renewal.
+
+**Grouper/**
+- Enables Identity integration with Grouper provisioning organizations and organizational units to folders and groups along with memberships.
