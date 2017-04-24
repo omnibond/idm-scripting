@@ -2,11 +2,7 @@
 
 ### Summary
 
-The Novell Identity Manager Scripting Driver allows you to write custom
-scripts in order to synchronize identity management information from Novell
-eDirectory™ to an external identity management system. This project contains
-Perl scripts that allow synchronization from your identity vault (eDirectory)
-to Grouper v2.3 or newer folders and groups. Use the scripts right 'out of the box' or customize them further to meet your needs.
+The NetIQ Identity Manager Scripting Driver allows you to write custom scripts in order to synchronize identity management information from the IDentity Vault to an external identity management system. This project contains Perl scripts that allow synchronization from your identity vault to Grouper v2.3 or newer folders and groups. Use the scripts right 'out of the box' or customize them further to meet your needs.
 
 ### Features
 
@@ -21,9 +17,9 @@ folder.
 
 ### What you Need
 
-Evaluation downloads are available for the Novell products below.
+Evaluation downloads are available for the NetIQ products below.
 
-- Novell Identity Manager and its prerequisites, namely Novell eDirectory and Novell iManager.
+- NetIQ Identity Manager and its prerequisites, namely eDirectory and iManager.
 - Identity Manager Integration Module for Scripting, with the latest patches.
 - Scripting Driver Documentation
 - Grouper v2.3 or later with the Grouper WS configured
@@ -50,7 +46,7 @@ prompted to enter the password for the Grouper WS user.
 - Go to Driver Properties and the GCVs section.  Configure the GrouperWS Base
   Url, Grouper Username, Base DN, Grouper Base Folder Path, and decide whether
 to provision a flat structure.
-- Start the Driver in iManager and the Novell IDM Scripting Driver service to begin synchronizing accounts.
+- Start the Driver in iManager and the NetIQ IDM Scripting Driver service to begin synchronizing accounts.
 
 Newly created groups will be synchronized to Grouper. You can also migrate
 existing groups using the driver's Migrate feature. You can even migrate an
