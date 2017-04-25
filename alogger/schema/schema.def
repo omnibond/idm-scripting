@@ -1,0 +1,70 @@
+##############################################################################
+# Linux/Unix Driver Schema File
+#
+# Syntax:
+#   SCHEMA [HIERARCHICAL]
+#
+#     HIERARCHICAL defines whether the schema has a hierarchy.
+#                  Default is false.
+#
+#   CLASS <class-name> [CONTAINER]
+#
+#     CONTAINER defines whether the class is a container class.
+#               Default is false.
+#
+#   ATTRIBUTE <attribute-name> [CASESENSITIVE] [MULTIVALUED] [NAMING] 
+#                              [READONLY] [REQUIRED] [STRING] [INTEGER] 
+#                              [STATE] [DN]
+#
+#     CASESENSITIVE defines this attribute to be case sensitive.
+#                   Default is false.
+#
+#     MULTIVALUED defines this attribute to be multivalued.
+#                 Default is false.
+#
+#     NAMING defines this attribute as the class naming attribute.
+#            Default is false.
+#
+#     READONLY defines this attribute to be read only.
+#              Default is false.
+#
+#     REQUIRED defines this attribute to be required for class definition.
+#              Default is false.
+#
+#     STRING defines this attribute to be of type string.
+#            String is the default type.
+#
+#     INTEGER defines this attribute to be of type integer.
+#            String is the default type.
+#
+#     STATE defines this attribute to be of type integer (TRUE or FALSE)
+#            String is the default type.
+#
+#     DN defines this attribute to be a distinguished name (referential)
+#            String is the default type.
+#
+##############################################################################
+
+SCHEMA
+
+  CLASS DirXMLjnsuNetworkDevice
+
+    ATTRIBUTE DirXMLjnsuDDNSPrefix
+    ATTRIBUTE DirXMLjnsuDescription
+    ATTRIBUTE DirXMLjnsuDevice
+    ATTRIBUTE DirXMLjnsuDeviceName NAMING REQUIRED
+    ATTRIBUTE DirXMLjnsuDHCPAddress
+    ATTRIBUTE DirXMLjnsuDisabled 
+    ATTRIBUTE DirXMLjnsuHWAddress
+    ATTRIBUTE DirXMLjnsuInfectedPorts 
+    ATTRIBUTE DirXMLjnsuInfected
+    ATTRIBUTE DirXMLjnsuMDisabled 
+    ATTRIBUTE DirXMLjnsuDisabledTime 
+    ATTRIBUTE DirXMLjnsuMDisabler 
+    ATTRIBUTE DirXMLjnsuNvrExpires
+    ATTRIBUTE DirXMLjnsuRegAddTime
+    ATTRIBUTE DirXMLjnsuUserDN
+    ATTRIBUTE DirXMLjnsuGroupDN
+    ATTRIBUTE DirXMLjnsuRegVersion
+    ATTRIBUTE DirXMLjnsuStaticAddr
+    ATTRIBUTE DirXMLjnsuWhyDisabled

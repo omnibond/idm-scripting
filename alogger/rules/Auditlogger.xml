@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?><driver-configuration dn="AuditLogger.Driverset.Services.YourOrganization" driver-set-dn="Driverset.Services.YourOrganization" name="AuditLogger">
+	<variable-decl>
+
+           <text-var var-name="AUDITLOGGER.RemoteHost"
+                 description="xlfid(RemoteHostDescr)Specify the host name or IP address and port number where the driver is running. The default port number is 8090. [Host Name or IP Address and Port; ###.###.###.###:####]"
+                 highlight="[]-"
+                 prompt="xlfid(RemoteHostPrompt)Remote Host Name and Port:"
+                 prompt-mandatory="true"
+                 prompt-type="ipa">xlfid(RemoteHostValue):8090</text-var>
+    
+           <text-var var-name="AUDITLOGGER.RemotePwd"
+                 description="xlfid(RemotePswdDescr)The Remote Loader password is used to control access to the Remote Loader instance. It must be the same password that is specified as the Remote Loader password on the Remote Loader."
+                 highlight="[]-"
+                 prompt="xlfid(RemotePswdPrompt)Remote Loader Password:"
+                 prompt-mandatory="true"
+                 prompt-type="password"/>
+    
+           <text-var var-name="AUDITLOGGER.DriverPwd"
+                 description="xlfid(DriverPswdDescr)The Driver Object Password is used by the Remote Loader to authenticate itself to the Metadirectory server. It must be the same password that is specified as the Driver Object Password on the Remote Loader."
+                 highlight="[]-"
+                 prompt="xlfid(DriverPswdPrompt)Driver Object Password:"
+                 prompt-mandatory="true"
+                 prompt-type="password"/>
+    
+           <text-var var-name="AUDITLOGGER.mysqlconnstring"
+                 description="xlfid(mysqlConnectionStringDesc)The connection string for the MySQL database.  ex. DBI:mysql:DBNAME:hostname.com:3306"
+                 prompt="xlfid(ContainerPrompt)Connection String:"
+                 prompt-mandatory="true"/>
+
+           <text-var var-name="AUDITLOGGER.mysqluserid"
+                 description="xlfid(mysqluseridDesc)Userid to use to connect to MySQL database."
+                 prompt="xlfid(mysqlUseridPrompt)Userid:"
+                 prompt-mandatory="true"/>
+
+           <text-var var-name="AUDITLOGGER.mysqlpassword"
+                 description="xlfid(mysqlpasswordDesc)Password to use to connect to MySQL database."
+                 prompt="xlfid(mysqlPasswordPrompt)Password:"
+                 prompt-type="password"
+                 prompt-mandatory="true"/>
+
+           <node-var var-name="AUDITLOGGER.Remote" node-name="#Text">REMOTE(hostname=<variable-ref var-name="AUDITLOGGER.RemoteHost" part="ipa"/> port=<variable-ref var-name="AUDITLOGGER.RemoteHost" part="port"/> kmo="SSL CertificateIP")</node-var>
+           <node-var var-name="AUDITLOGGER.Remote.Pwd" node-name="#Text">REMOTE(<variable-ref var-name="AUDITLOGGER.RemotePwd"/>)</node-var>
+
+   
+	</variable-decl>
+	<attributes>
+		<application-schema>
+			<schema-def>
+				<class-def class-name="DirXMLjnsuNetworkDevice">
+					<attr-def attr-name="DirXMLjnsuDDNSPrefix"/>
+					<attr-def attr-name="DirXMLjnsuDescription"/>
+					<attr-def attr-name="DirXMLjnsuDevice"/>
+					<attr-def attr-name="DirXMLjnsuDeviceName" naming="true" required="true"/>
+					<attr-def attr-name="DirXMLjnsuDHCPAddress"/>
+					<attr-def attr-name="DirXMLjnsuDisabled"/>
+					<attr-def attr-name="DirXMLjnsuHWAddress"/>
+					<attr-def attr-name="DirXMLjnsuInfectedPorts"/>
+					<attr-def attr-name="DirXMLjnsuInfected"/>
+					<attr-def attr-name="DirXMLjnsuMDisabled"/>
+					<attr-def attr-name="DirXMLjnsuDisabledTime"/>
+					<attr-def attr-name="DirXMLjnsuMDisabler"/>
+					<attr-def attr-name="DirXMLjnsuNvrExpires"/>
+					<attr-def attr-name="DirXMLjnsuRegAddTime"/>
+					<attr-def attr-name="DirXMLjnsuUserDN"/>
+					<attr-def attr-name="DirXMLjnsuGroupDN"/>
+					<attr-def attr-name="DirXMLjnsuRegVersion"/>
+					<attr-def attr-name="DirXMLjnsuStaticAddr"/>
+					<attr-def attr-name="DirXMLjnsuWhyDisabled"/>
+				</class-def>
+			</schema-def>
+		</application-schema>
+		<configuration-manifest>
+			<manifest name="SCRIPTING">
+				<capability name="password-subscribe"/>
+				<capability name="password-publish"/>
+				<capability name="password-check"/>
+			</manifest>
+		</configuration-manifest>
+		<global-config-values>
+			<configuration-values>
+				<definitions>
+					<header display-name="Driver parameters"/>
+					<definition display-name="Connected System or Driver Name" name="ConnectedSystemName" type="string">
+						<description>The name of the connected system, application or Identity Manager driver. This value is used by the e-mail notification templates.</description>
+						<value xml:space="preserve">AuditLogger</value>
+					</definition>
+				</definitions>
+			</configuration-values>
+		</global-config-values>
+		<driver-filter-xml>
+			<filter>
+				<filter-class class-name="DirXMLjnsuNetworkDevice" publisher="ignore" publisher-create-homedir="true" publisher-track-template-member="false" subscriber="sync">
+					<filter-attr attr-name="DirXMLjnsuDDNSPrefix" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDeviceName" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuHWAddress" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuMDisabled" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuNvrExpires" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDevice" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDHCPAddress" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDisabled" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuRegVersion" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDescription" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuRegAddTime" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuStaticAddr" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuInfectedPorts" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuInfected" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuMDisabler" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuUserDN" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuDisabledTime" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuGroupDN" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+					<filter-attr attr-name="DirXMLjnsuWhyDisabled" from-all-classes="true" merge-authority="default" publisher="ignore" publisher-optimize-modify="true" subscriber="sync"/>
+				</filter-class>
+			</filter>
+		</driver-filter-xml>
+		<driver-image><![CDATA[R0lGODlhYgBPANU/AP///4mIiKmoqLq6uuno6NbV1d3c3WNjY7Kysj09Pfj4+CkpKczLy3d2duTk5B4eHgEBAfT09FBQULa0tZWTk+zs7ENDQ/39/QsLC/Hx8e7u7vb29sXFxeLi4v7+/sDAwNHQ0ZuamhkZGY+Ojvb19RQUFFpaWtTT001NTe7t7q+trpmXmMPDw4GAgOfn59/f37SztJeWl/z7/NjY2Le3t+Pj48jHx6Khoe3t7b++vu/v7/r6+qCen5GQkOrq6v///yH5BAEAAD8ALAAAAABiAE8AAAb/wJ9wSCwaj8ikcpl0sVoHy2KRMDUErw1zy+16t6fGAgIRUROLBwaCMdG+8LjcqGs8IIsro5NRuE4DARZkEgxzh4hLIAllMQ4AkJGSGTmMJTeJmZoMdwcVkqCgCjFrIZqnci8LGD2hrqA2IhAIqLVcF4MtoDgsPAENDSMCNhqgAxglILbLSRQQKAqRHh8jDS0BASMj2CE2HpIxzwrM5EMbDyUMkREq1iMhAiryKgIhIwMkkTKDMOXlARAOSGsXIISKASwYKGTAYoCKEB++QfoAQcK4IxwCHJBgoaPHjyBDihxJkiSKEgsMRGLRIMCNCTZOGOjgwEEHAydsTLgBItIG/wsYZhiZYUIWhAdIkypdyrSp06dQHyTgEElDD5c0GBggoCOC1wg6CBhgQINGhkgjIAgogkDWghgvcGQg8bWu3bt48+rd61UShxYhJjB4kWLDDhkXLsjYsSHFCwYTZkQ6doAIDQwYWux4xbmz58+gBYxQYcNACgUyJELyIENBCgM21EGaQWWIATUwQOvezdsVhRADThDYkDoU6w0ETlCFlAGNEBkNIAT4HEGDjuvYs2vfzr27dgDZNagGIIyFAR07xkvysEMH7EgK0JD48QLDgk+cHSDYlk2b//8ABihggD0AY+CBLUUTSQ8q7BGBDJ3JEEEHsgFAAhoV/KCCdJ190P+CNdn0QMGIJJZo4okoohjDiiu0uAIFVxUgyQ0NOhDBBZ1dEIEDMkKCAxoE/NAABjRwZoM1PfAQDwIwTODkk1BGKeWUUJZFwwBYZkkDAjecIAkNNd6Y444vRFKAVC78YMIDPYZCQAstrCDAABwwAMKdeOap55585nnCnycUIOgMhM5wAgM5sCDJCQ128GCEE/oQCQIVBSnBA48YN0CcKrBwwgsOuOACAaSWauqpqKaKqg8VtOoqAS+A8EEEkWSA0HnpvcKeDg4oCEALELSgww+XEuCKAhSUN4MLXZGwwbPQRivttNRKq8C12GK7gQaPSRbJDMENVxwoxxFQDCQVrCL/wDjFurLBCDwE50IEOyTmwb345qvvvvzy68oFCvgwAwe+ApCTaaiNx5prOEiyIQo2CNFuKCQIw8EL6KnX28brtfeCDT3BN8NghR2W2GKNaQAhc6uM4IDEDxhLMQUIMGAjjhznHIqEfwygkiQ1zLBVV1/pkMJZkhzwzABDTAwKCTHAAMJwGuvMMcA6PIZAmZIoQEANNXTgAqsZbCYJQAsI0EHTMbtCwgo0CFew1TqzRgIBM7CgQpu6XRAAMjFEzLbMT4dAQwE+zE13zhfskIEDJ+QgAAsp6AaC0iIEwMJFMBMuCQmGI6744lcroEMNIORADwf5cPZCA24BNywRTkuy/wFwopO++MKnn8AClzw0GPI6B6xRwgEqfJCBEbVHAvoAuetO98IZuDCyQzdQMJ0kwD4gwQ0wnMA57W1TjHvi0u/eWgQ+vHDoAPWAckAJIcDAgAZJNA/J89Gnb7UHjSNBWNynN/mJAAE3UoL+LHS+0flvY4pRAAkeV4APGJBpS1gg/9D3QNIpxnEUuiATNNjADkrPA8jxUtJEgEEFlq9w0OOgCUkXML4B4AAsHOELP1fCGdLQBzbEYQvzt0Pn9RBdJ/gAAhDwARC0ThJLRMD+BrZEGnCgA6HgwBI/sYMOcGBLCODADMwWihqKMINF3F8PM6BFBhBKiwiggQtAEUUAdP+ABiBwQQVcAIItDQBpkIBjBWx1xVYBIo5YLCMQz+hCzxkxhgriAAfICIAMbIkGlIxiBcwCCkvGEZBwdAENEhmJHSgRAaSEzyJXOEQkkBCSs6EkJDqwxJ9BIooDmGMoKrBECwZyicFxxQ4u+URImJGVOnSkGmHJGRIssUIAiOJyXBHKX8ZRlt9aogpVGcQcolGZDGQmZ5Y4zWguMZWgMMASQwbH4YUiA8AUxSojIcRkuu2IruBlGKG4xGKCQp8DsCY66djPrs0TEvX85j3FKYkKdKCP5OSnFDmjz4kKsjOaNGg3W3mEV/aPjwMI4wluEtFJLbEzFbUmfl6RUW4ykoj/4NxgNEwZxzFGQp/lrCNFq6hSjC4RkAA4Jj292ciF5u6iDS3pLU/KGVruEwBIdZtOXYpMhZoPks5k4i6Vak4ErDQUIKilNb3lCqdCM6gHvSFRYWrUxOF0q09dKgLcKYlhFhSq8XwFHNEpVISu1ZVpDKfo4ImAgKaTq1FEAFCziYBtwhEBtkyqVuW5UXteNXchRaUkDHDKnNZSjoedrDXVSVZ0EVORlbUqDHPnSSYSik47gONI5QqAGRT2BIbKLAMoKUhR4pFQp1TesdKa0KKG4nbMJAEIQpoVXe7AAITCj06Vm9kmfrWnO5jBKQewB870Va0cZV5gkdu/3UwVNFHd/813i8vWUOAgBtCrgAN9OlHdpFc36/1rR8eLO/lu7LyfuS9o8hveIiyQvP7tDYA9I+DPENiyoEDwfMfJVPtucWMPVq3t8KmbBXemwZ7JsHELdzgZmrfC6L1wb0TcXlHcIG4EmDBLURxgFfPGa6kdsSRkwKQ8bqBq9OUNiDuD45cCFpwGa1ANxMSbQvGmA4Ty52dQ6ILIgpcJKHjAQPd3Kw3Uy4d1k1AHGiaJorxhCQd4AF0lQYAcgMABfZABYhJD5zrb+c54zrOe8byYCBDgugCwwANywAQ7FIkzGgDBSAfJl0Y7+tFfyUAKfLBYAMgAKcpYwoZ0ESFeOeDPrgq1qMFHTepSm/rUg8QmAI6RAAMwoQYleACgXQFkMOvMBBBoQIaWAJ1g2frXkjiGCCYwviQYYAwCAPavTzCGFgiFCwMoQbAypewHZkAAneCADLwwgDEsIAB4rIm4x03ucpv73OhOt7rzFoJBYOAAOYgAHF7QgjUcJSr4zre+940UMlggADaQdyoE0AALJODgCE+4whfO8IY7/OEQR8EBKECDGmw7E36YQQEKxfGOe/zjIA+5yEO+8Rdo4AL+SLnKV85yVAQBADs=]]></driver-image>
+		<java-module value="com.novell.nds.dirxml.remote.driver.DriverShimImpl"/>
+		<mapping-rule dn="Schema Mapping.AuditLogger.Driverset.Services.YourOrganization"/>
+		<driver-start-option value="2"/>
+		<driver-cache-limit value="0"/>
+                <shim-auth-server>
+                        <variable-ref attr-name="value" var-name="AUDITLOGGER.Remote"/>
+                </shim-auth-server>
+                <shim-auth-password>
+                  <variable-ref attr-name="password" var-name="AUDITLOGGER.Remote.Pwd"/>
+                </shim-auth-password>
+                <driver-password>
+                  <variable-ref attr-name="password" var-name="AUDITLOGGER.DriverPwd"/>
+                </driver-password>
+		<shim-config-info-xml>
+			<driver-config name="Scripting Driver">
+				<driver-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Automatic Loopback Detection:" name="auto-loopback-detection" type="enum">
+								<description>Choose 'Yes' if you wish to enable automatic loopback detection or 'No' to disable automatic loopback detection</description>
+								<value>true</value>
+								<enum-choice display-name="Yes">true</enum-choice>
+								<enum-choice display-name="No">false</enum-choice>
+							</definition>
+							<definition display-name="Script Command:" name="script-command" type="string">
+								<description>The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+								<description>Enter the command line that the driver will use to execute scripts.</description>
+								<value>cscript //nologo</value>
+							</definition>
+							<definition display-name="Script Trace File:" name="script-trace-file" type="string">
+								<description>The file to execute for Subscriber events. This path is relative from the scripts/ directory</description>
+								<description>Enter the path and file name for the script trace file.</description>
+								<value>logs\script-trace.log</value>
+							</definition>
+							<definition display-name="DB Connection string:" name="db-conn-string" type="string">
+								<description>The MySQL Database Connection String</description>
+								<value><variable-ref var-name="AUDITLOGGER.mysqlconnstring"/></value>
+							</definition>
+							<definition display-name="DB userid:" name="db-userid" type="string">
+								<description>The userid used to connect to the MySQL database</description>
+								<value><variable-ref var-name="AUDITLOGGER.mysqluserid"/></value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</driver-options>
+				<subscriber-options>
+					<configuration-values>
+						<definitions>
+							<definition display-name="Subscriber Script:" name="subscriber-script" type="string">
+								<description>The file to execute for Subscriber events.</description>
+								<value>subscriber.pl</value>
+							</definition>
+						</definitions>
+					</configuration-values>
+				</subscriber-options>
+				<publisher-options>
+					<definition display-name="Subscriber Script:" name="poll-script" type="string">
+						<description>The Polling file to execute for Publisher events.</description>
+						<value>poll.pl</value>
+					</definition>
+					<definition display-name="Polling Interval (Seconds):" name="pub-polling-interval">60</definition>
+					<definition display-name="Heartbeat Interval:" name="pub-heartbeat-interval">0</definition>
+				</publisher-options>
+			</driver-config>
+		</shim-config-info-xml>
+		<named-password display-name="xlfid(mysqlpassword)MySQL password for Database" name="mysqldbpassword"><variable-ref var-name="AUDITLOGGER.mysqlpassword" attr-name="password"/></named-password>
+	</attributes>
+	<children>
+		<publisher name="Publisher">
+			<attributes/>
+			<children/>
+		</publisher>
+		<subscriber name="Subscriber">
+			<attributes>
+				<command-transformation-rule dn="Add in all JuNetSu attributes for every operation.Subscriber.AuditLogger.Driverset.Services.YourOrganization"/>
+				<matching-rule dn="Matching Policy.Subscriber.AuditLogger.Driverset.Services.YourOrganization"/>
+			</attributes>
+			<children>
+				<rule name="Add in all JuNetSu attributes for every operation">
+					<policy>
+						<rule>
+							<description>Set required attributes</description>
+							<conditions>
+								<and>
+									<if-operation op="equal">modify</if-operation>
+								</and>
+							</conditions>
+							<actions>
+								<do-set-dest-attr-value name="DirXMLjnsuDDNSPrefix">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDDNSPrefix"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDescription">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDescription"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDevice">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDevice"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDeviceName">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDeviceName"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDHCPAddress">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDHCPAddress"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDisabled">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDisabled"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuHWAddress">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuHWAddress"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuInfectedPorts">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuInfectedPorts"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuMDisabled">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuMDisabled"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuNvrExpires">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuNvrExpires"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuRegAddTime">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuRegAddTime"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuRegUserid">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuRegUserid"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuRegVersion">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuRegVersion"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuStaticAddr">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuStaticAddr"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuInfected">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuInfected"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuMDisabler">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuMDisabler"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuUserDN">
+									<arg-value type="dn">
+										<token-src-attr name="DirXMLjnsuUserDN"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuGroupDN">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuGroupDN"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuDisabledTime">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuDisabledTime"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+								<do-set-dest-attr-value name="DirXMLjnsuWhyDisabled">
+									<arg-value type="string">
+										<token-src-attr name="DirXMLjnsuWhyDisabled"/>
+									</arg-value>
+								</do-set-dest-attr-value>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+				<rule name="Matching Policy">
+					<policy>
+						<rule>
+							<description>Veto non DirXMLjnsuNetworkDevice objects</description>
+							<conditions>
+								<or>
+									<if-class-name mode="nocase" op="not-equal">DirXMLjnsuNetworkDevice</if-class-name>
+								</or>
+							</conditions>
+							<actions>
+								<do-veto/>
+							</actions>
+						</rule>
+					</policy>
+				</rule>
+			</children>
+		</subscriber>
+		<rule name="Schema Mapping">
+			<attr-name-map>
+				<class-name>
+					<nds-name>DirXMLjnsuNetworkDevice</nds-name>
+					<app-name>DirXMLjnsuNetworkDevice</app-name>
+				</class-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDDNSPrefix</nds-name>
+					<app-name>DirXMLjnsuDDNSPrefix</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDescription</nds-name>
+					<app-name>DirXMLjnsuDescription</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDevice</nds-name>
+					<app-name>DirXMLjnsuDevice</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDeviceName</nds-name>
+					<app-name>DirXMLjnsuDeviceName</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDHCPAddress</nds-name>
+					<app-name>DirXMLjnsuDHCPAddress</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuDisabled</nds-name>
+					<app-name>DirXMLjnsuDisabled</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuHWAddress</nds-name>
+					<app-name>DirXMLjnsuHWAddress</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuInfectedPorts</nds-name>
+					<app-name>DirXMLjnsuInfectedPorts</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuMDisabled</nds-name>
+					<app-name>DirXMLjnsuMDisabled</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuNvrExpires</nds-name>
+					<app-name>DirXMLjnsuNvrExpires</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuRegAddTime</nds-name>
+					<app-name>DirXMLjnsuRegAddTime</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuRegVersion</nds-name>
+					<app-name>DirXMLjnsuRegVersion</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<nds-name>DirXMLjnsuStaticAddr</nds-name>
+					<app-name>DirXMLjnsuStaticAddr</app-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuGroupDN</app-name>
+					<nds-name>DirXMLjnsuGroupDN</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuInfected</app-name>
+					<nds-name>DirXMLjnsuInfected</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuUserDN</app-name>
+					<nds-name>DirXMLjnsuUserDN</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuMDisabler</app-name>
+					<nds-name>DirXMLjnsuMDisabler</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuWhyDisabled</app-name>
+					<nds-name>DirXMLjnsuWhyDisabled</nds-name>
+				</attr-name>
+				<attr-name class-name="DirXMLjnsuNetworkDevice">
+					<app-name>DirXMLjnsuDisabledTime</app-name>
+					<nds-name>DirXMLjnsuDisabledTime</nds-name>
+				</attr-name>
+			</attr-name-map>
+		</rule>
+		<entitlement-definition name="ScriptingAccount">
+			<entitlement conflict-resolution="union" description="User Account in Scripting Account" display-name="Scripting User Account">
+				<interpretive-variables>
+					<add-variable lossy="false" name="on-account-add"/>
+					<remove-variable lossy="true" name="on-account-remove"/>
+				</interpretive-variables>
+			</entitlement>
+		</entitlement-definition>
+	</children>
+	<global-config-values>
+		<configuration-values>
+			<definitions/>
+		</configuration-values>
+	</global-config-values>
+</driver-configuration>
