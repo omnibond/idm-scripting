@@ -3,7 +3,7 @@ The idm-scripting repository contains open source plug-ins to the Identity Manag
 
 The scripting driver plug-ins turn the scripting driver into customizable integrations to various systems.
 
-Omnibond also developes additional drivers for Mainframe, i Series, Linux/UNIX, Blackboard and user settings which you can find documentation on at: https://www.netiq.com/documentation/identity-manager-46-drivers/
+Omnibond also developes additional drivers for Mainframe, i Series, Linux/UNIX, Blackboard and user settings which you can find documentation on at: https://www.netiq.com/documentation/identity-manager-47-drivers/
 
 
 Respective addins are in the following directory structure:
