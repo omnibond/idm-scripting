@@ -17,6 +17,9 @@ Respective addins are in the following directory structure:
 **Microsoft/windows/domain**
 - Provides Identity integration directly with local windows security and windows Domain accounts.
 
+**Grouper/**
+- Enables Identity integration with the Internet2 Grouper project, provisioning organizations and organizational units to folders and groups along with memberships.  For more information about Grouper see: https://www.internet2.edu/products-services/trust-identity/grouper/
+
 **sasldb/**
 - Provides connectivity to the sasldb database, used by many Linux and UNIX applications for Simple Authentication Security Layer (SASL).
 
@@ -25,6 +28,3 @@ Respective addins are in the following directory structure:
 
 **Honeyd/**
 - Enables Identity device integration with Honeyd to detect devices with bots or worms and can be used with the DHCP scripts to remove a device from the network at the next DHCP lease renewal.
-
-**Grouper/**
-- Enables Identity integration with the Internet2 Grouper project, provisioning organizations and organizational units to folders and groups along with memberships.  For more information about Grouper see: https://www.internet2.edu/products-services/trust-identity/grouper/
