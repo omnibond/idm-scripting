@@ -2,7 +2,7 @@
 #
 # DESCRIPTION
 #
-#   This script implements the modify command for the Meeting Maker application.
+#   This script implements the modify command for the Junetsu application.
 #
 #   The modify command is an input command.  The IDM engine sends a modify
 #   command to the subscriber to request that the external application modify
