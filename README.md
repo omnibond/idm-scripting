@@ -1,9 +1,9 @@
 # IDM Scripting Plug-Ins
-The idm-scripting repository contains open source plug-ins to the Identity Management Scripting scritping driver developed by Omnibond and sold through Microfocus as the NetIQ Identity Manger Scripting Driver (https://www.netiq.com/documentation/identity-manager-47-drivers/bi_impl_scripting/data/bi_impl_scripting.html)
+The idm-scripting repository contains open source plug-ins to the Identity Management Scripting scrpting driver developed by Omnibond and sold through Microfocus as the NetIQ Identity Manger Scripting Driver (https://www.netiq.com/documentation/identity-manager-47-drivers/bi_impl_scripting/data/bi_impl_scripting.html)
 
 The scripting driver plug-ins turn the scripting driver into customizable integrations to various systems.
 
-Omnibond also developes additional drivers for Mainframe, i Series, Linux/UNIX, Blackboard and user settings which you can find documentation on at: https://www.netiq.com/documentation/identity-manager-47-drivers/
+Omnibond also develops additional drivers for Mainframe, i Series, Linux/UNIX, Blackboard and user settings which you can find documentation on at: https://www.netiq.com/documentation/identity-manager-47-drivers/
 
 
 Respective addins are in the following directory structure:
