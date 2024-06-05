@@ -3,19 +3,20 @@
 
 Microsoft Exchange includes the Exchange Management Shell, a command and scripting shell based on Windows PowerShell.
 
-Novell Identity Manager, with the Identity Manager Active Directory Driver, allows synchronization of identities to and from Microsoft Active Directory and Exchange. The Identity Manager Scripting Driver can be deployed with this project's scripts to allow custom functionality to be implemented for Exchange.
+NetIQ Identity Manager, with the Identity Manager Active Directory Driver, allows synchronization of identities to and from Microsoft Active Directory and Exchange. The Identity Manager Scripting Driver can be deployed with this project's scripts to allow custom functionality to be implemented for Exchange.
 
 ### Features
 
-The 'starter' scripts included create mailboxes and distribution groups in Exchange when users and groups are created in Novell eDirectory™. The scripts implement several options for mailbox placement. Mailboxes can be created in a specific mailbox database, a randomly assigned database, or a database indicated by an attribute.
+The 'starter' scripts included create mailboxes and distribution groups in Exchange when users and groups are created in NetIQ eDirectory™. The scripts implement several options for mailbox placement. Mailboxes can be created in a specific mailbox database, a randomly assigned database, or a database indicated by an attribute.
 
 ### What you Need
 
 Evaluation downloads are available for the Novell products below.
 
-- Novell Identity Manager and its prerequisites, namely Novell eDirectory and Novell iManager.
+- NetIQ Identity Manager and its prerequisites, namely NetIQ eDirectory and NetIQ iManager.
+- (Optional) Identity Manager Designer.
 - Identity Manager Integration Module for Scripting, with the latest patches.
-- Scripting Driver Documentation: https://www.netiq.com/documentation/idm45drivers/bi_impl_scripting/data/bi_impl_scripting.html
+- Scripting Driver Documentation: https://www.netiq.com/documentation/idm48drivers/bi_impl_scripting/data/bi_impl_scripting.html
 - Exchange Management Shell running on a Windows system in one of the Exchange organization's domains.
 
 ### Installation
@@ -25,11 +26,12 @@ See the relevant product documentation for help installing eDirectory, iManager,
 
 **Where to Install**
 
-The Scripting Driver consists of two components: the Driver Object which runs on a eDirectory/Identity Manager server, and the Driver Shim which runs as a Windows service. The Windows system you use has the following prerequisites:
+The Scripting Driver consists of two primary components: the Driver Object which runs on an eDirectory/Identity Manager server, and the Driver Shim which runs as a Windows service. Additionally, it is recommended to use the Scripting Driver Script Service, a Windows service that executes scripts more efficiently.
 
-- A modern Windows Server, any Edition, x86 (32-bit) or x64.
+The Windows system you use has the following prerequisites:
+
+- A modern Windows Server OS, any Edition, x64 architecture.
 - Exchange Management Shell installed (included with Exchange Management Tools).
-- If you are running the x86 Exchange Management Shell, install the x86 Scripting Driver. Otherwise, use the x64 Scripting Driver.  
 
 **Installing the AD Driver**
 
@@ -56,6 +58,7 @@ If the AD Driver is already installed:
     - Use the Extend Schema task in iManager to add the schema file Schema\exshell.sch from the installation directory.
     - Log out/log in to iManager to refresh your view of the schema.
 - Extend the AD Driver filter
+    - Note: these tasks can also be performed in Designer.
     - Open the AD Driver's Driver Overview in iManager.
     - Click the Driver Filter icon in the diagram to open the Driver Filter.
     - Click the User class in the Filter. Click the Add Attribute button.
@@ -64,6 +67,7 @@ If the AD Driver is already installed:
     - Set DirXML-ExShellState's Publish mode to Synchronize, and its Subscriber mode to Ignore.
     - Click OK to save your changes.
 - Extend the AD Driver policies
+    - Note: these tasks can also be performed in Designer.
     - In the AD Driver's Driver Overview, click the Publisher Channel's Event Transformation Policies icon.
     - Click Insert to insert a new policy.
     - Enter the Policy name 'Exchange Attribute Detection Policy' and click OK.
@@ -73,7 +77,7 @@ If the AD Driver is already installed:
 
 **Importing the Driver Configuration**
 
-Import the file Rules\Scripting-ExShell-IDM3_6_0-V5.xml from your installation directory. See the Scripting Driver documenation for more details.
+Import the XML configuration file (IDMScripting-version.xml) in the Rules directory in your installation directory. See the Scripting Driver documenation for more details.
 
 ### Configuring the Exchange Scripts
 
@@ -85,7 +89,7 @@ Import the file Rules\Scripting-ExShell-IDM3_6_0-V5.xml from your installation d
 - If the AD Driver is running as a Remote Loader on the system, change the TCP/IP ports used by the Scripting Driver.
     - The AD Driver uses ports 8090 (command) and 8091 (HTTP) by default. Choose different ports for the Scripting Driver, e.g. 9090 and 9091.
     - Stop the Scripting Driver and Driver Shim.
-    - In iManager, edit Driver properties and change the port in Remote loader connection parameters to the new command port.
+    - In iManager or Designer, edit Driver properties and change the port in Remote loader connection parameters to the new command port.
     - On the Connected System, edit the file conf\wsdrv.conf. Change the port number in the -connection string to the new command port. Change the port number for the -httpport parameter to the new HTTP port.
     - Restart the Driver and Driver Shim.
 - If Windows Firewall is enabled on the system where the Driver Shim is installed, create a exceptions for the ports used by the AD Driver (if necessary) and the Scripting Driver Shim.
